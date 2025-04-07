@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>System Breach Terminal</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      color: #00ff00;
+      font-family: monospace;
+      font-size: 22px;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .terminal {
+      position: relative;
+      z-index: 1;
+      padding: 30px;
+      height: 100%;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+
+    .blink {
+      animation: blink 1s steps(2, start) infinite;
+    }
+
+    @keyframes blink {
+      to { visibility: hidden; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+  <div class="terminal" id="terminal"><span class="blink">_</span></div>
+
+  <script>
+    // خلفية Matrix Rain
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+
+    const letters = "01";
+    const fontSize = 16;
+    const columns = canvas.width / fontSize;
+    const drops = Array(Math.floor(columns)).fill(1);
+
+    function drawMatrix() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#0F0";
+      ctx.font = fontSize + "px monospace";
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+    setInterval(drawMatrix, 33);
+
+    // الترمينال
+    const terminal = document.getElementById("terminal");
+
+    const lines = [
+      ">> Initializing breach protocol...",
+      ">> Establishing secure tunnel...",
+      ">> Loading modules: [stealth-mode] [brute-force] [dns_spoof]",
+      ">> الاتصال بالخادم الخارجي...",
+      ">> تم تجاوز الجدار الناري - SUCCESS",
+      ">> استخراج كلمات المرور المشفرة...",
+      ">> تشغيل تحليل النظام: [AI core active]",
+      ">> جاري تحميل البيانات الحساسة...",
+      ">> [##########] 100%",
+      ">> إرسال البيانات إلى السيرفر...",
+      ">> تحليل التشفير باستخدام خوارزمية XOR...",
+      ">> تحميل ملف: secret_hash_dump.bin",
+      ">> قراءة بيانات السيرفر...",
+      ">> جاري تنفيذ سكربت التتبع الخلفي...",
+      ">> تحليل الشبكة الداخلية...",
+      ">> بناء خريطة الاتصال...",
+      ">> محاولة الوصول إلى قاعدة البيانات...",
+      ">> تفعيل التخفي الرقمي...",
+      ">> انتظار استجابة السيرفر..."
+    ];
+
+    let index = 0;
+    const typingSpeed = 80;
+
+    function typeLine() {
+      if (index < lines.length) {
+        const line = lines[index];
+        let charIndex = 0;
+        const interval = setInterval(() => {
+          if (charIndex < line.length) {
+            terminal.innerHTML = terminal.innerHTML.replace(/<span.*<\/span>/, '') + line[charIndex++];
+          } else {
+            clearInterval(interval);
+            terminal.innerHTML += "\n";
+            index++;
+            setTimeout(typeLine, 300);
+          }
+        }, typingSpeed);
+      } else {
+        simulateServerError();
+      }
+    }
+
+    function simulateServerError() {
+      const msgs = [
+        "\n>> تحذير: السيرفر لا يستجيب...",
+        ">> إعادة المحاولة...",
+        ">> فشل الاتصال بالخادم الخارجي!",
+        ">> إغلاق الجلسة المشفرة.",
+        ">> العملية لم تكتمل، الرجاء المحاولة لاحقًا."
+      ];
+      let i = 0;
+      const errInterval = setInterval(() => {
+        if (i < msgs.length) {
+          terminal.innerHTML += msgs[i++] + "\n";
+        } else {
+          clearInterval(errInterval);
+        }
+      }, 1500);
+    }
+
+    window.onload = () => {
+      typeLine();
+    };
+  </script>
+</body>
+</html>
