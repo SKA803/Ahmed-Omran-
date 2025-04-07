@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>System Breach Terminal</title>
+  <title>System Breach Terminal v2.0</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      background: black;
+      background: #000;
       color: #00ff00;
-      font-family: monospace;
+      font-family: 'Courier New', monospace;
       font-size: 22px;
       height: 100%;
       overflow: hidden;
@@ -20,6 +20,7 @@
       top: 0;
       left: 0;
       z-index: 0;
+      opacity: 0.15;
     }
 
     .terminal {
@@ -29,6 +30,8 @@
       height: 100%;
       overflow-y: auto;
       white-space: pre-wrap;
+      text-shadow: 0 0 5px #00ff00;
+      line-height: 1.5;
     }
 
     .blink {
@@ -38,24 +41,155 @@
     @keyframes blink {
       to { visibility: hidden; }
     }
+
+    .progress-bar {
+      display: inline-block;
+      background: #003300;
+      height: 1em;
+      width: 200px;
+      border: 1px solid #00ff00;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #00ff00;
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    .warning {
+      color: #ffff00;
+    }
+
+    .error {
+      color: #ff0000;
+      animation: shake 0.5s;
+    }
+
+    .success {
+      color: #00ff00;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+
+    .command-input {
+      background: transparent;
+      border: none;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      font-size: 22px;
+      width: 80%;
+      outline: none;
+      caret-color: #00ff00;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .glitch {
+      position: relative;
+    }
+
+    .glitch::before, .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+    }
+
+    .glitch::before {
+      left: 2px;
+      text-shadow: -2px 0 #ff00ff;
+      clip: rect(44px, 450px, 56px, 0);
+      animation: glitch-anim 5s infinite linear alternate-reverse;
+    }
+
+    .glitch::after {
+      left: -2px;
+      text-shadow: -2px 0 #00ffff;
+      clip: rect(44px, 450px, 56px, 0);
+      animation: glitch-anim2 5s infinite linear alternate-reverse;
+    }
+
+    @keyframes glitch-anim {
+      0% { clip: rect(31px, 9999px, 94px, 0); }
+      10% { clip: rect(112px, 9999px, 76px, 0); }
+      20% { clip: rect(85px, 9999px, 77px, 0); }
+      30% { clip: rect(27px, 9999px, 97px, 0); }
+      40% { clip: rect(64px, 9999px, 98px, 0); }
+      50% { clip: rect(61px, 9999px, 85px, 0); }
+      60% { clip: rect(99px, 9999px, 114px, 0); }
+      70% { clip: rect(34px, 9999px, 115px, 0); }
+      80% { clip: rect(98px, 9999px, 129px, 0); }
+      90% { clip: rect(43px, 9999px, 96px, 0); }
+      100% { clip: rect(82px, 9999px, 64px, 0); }
+    }
+
+    @keyframes glitch-anim2 {
+      0% { clip: rect(65px, 9999px, 119px, 0); }
+      10% { clip: rect(25px, 9999px, 145px, 0); }
+      20% { clip: rect(129px, 9999px, 102px, 0); }
+      30% { clip: rect(79px, 9999px, 136px, 0); }
+      40% { clip: rect(128px, 9999px, 123px, 0); }
+      50% { clip: rect(36px, 9999px, 17px, 0); }
+      60% { clip: rect(67px, 9999px, 62px, 0); }
+      70% { clip: rect(10px, 9999px, 35px, 0); }
+      80% { clip: rect(21px, 9999px, 124px, 0); }
+      90% { clip: rect(69px, 9999px, 103px, 0); }
+      100% { clip: rect(20px, 9999px, 78px, 0); }
+    }
+
+    .command {
+      color: #00ffff;
+    }
+
+    .system {
+      color: #00ff00;
+    }
+
+    .hacker {
+      color: #ff00ff;
+    }
   </style>
 </head>
 <body>
   <canvas id="matrix"></canvas>
-  <div class="terminal" id="terminal"><span class="blink">_</span></div>
+  <div class="terminal" id="terminal">
+    <div class="glitch system" data-text=">> INITIATING SYSTEM BREACH PROTOCOL <<"></div>
+    <div id="content"></div>
+    <div id="input-line">> <input type="text" class="command-input hidden" id="command-input" autocomplete="off"><span class="blink">_</span></div>
+  </div>
+
+  <audio id="typing-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-fast-typing-1543.mp3" preload="auto"></audio>
+  <audio id="error-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-explosion-2759.mp3" preload="auto"></audio>
+  <audio id="success-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3" preload="auto"></audio>
+  <audio id="access-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-security-system-approved-1520.mp3" preload="auto"></audio>
 
   <script>
-    // خلفية Matrix Rain
+    // Matrix Rain Background
     const canvas = document.getElementById("matrix");
     const ctx = canvas.getContext("2d");
 
-    canvas.height = window.innerHeight;
-    canvas.width = window.innerWidth;
+    function resizeCanvas() {
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+    }
+    resizeCanvas();
 
-    const letters = "01";
+    const letters = "01アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン";
     const fontSize = 16;
-    const columns = canvas.width / fontSize;
-    const drops = Array(Math.floor(columns)).fill(1);
+    let columns = Math.floor(canvas.width / fontSize);
+    const drops = Array(columns).fill(1);
 
     function drawMatrix() {
       ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
@@ -73,76 +207,313 @@
         drops[i]++;
       }
     }
-    setInterval(drawMatrix, 33);
 
-    // الترمينال
-    const terminal = document.getElementById("terminal");
+    const matrixInterval = setInterval(drawMatrix, 33);
 
-    const lines = [
-      ">> Initializing breach protocol...",
-      ">> Establishing secure tunnel...",
-      ">> Loading modules: [stealth-mode] [brute-force] [dns_spoof]",
-      ">> الاتصال بالخادم الخارجي...",
-      ">> تم تجاوز الجدار الناري - SUCCESS",
-      ">> استخراج كلمات المرور المشفرة...",
-      ">> تشغيل تحليل النظام: [AI core active]",
-      ">> جاري تحميل البيانات الحساسة...",
-      ">> [##########] 100%",
-      ">> إرسال البيانات إلى السيرفر...",
-      ">> تحليل التشفير باستخدام خوارزمية XOR...",
-      ">> تحميل ملف: secret_hash_dump.bin",
-      ">> قراءة بيانات السيرفر...",
-      ">> جاري تنفيذ سكربت التتبع الخلفي...",
-      ">> تحليل الشبكة الداخلية...",
-      ">> بناء خريطة الاتصال...",
-      ">> محاولة الوصول إلى قاعدة البيانات...",
-      ">> تفعيل التخفي الرقمي...",
-      ">> انتظار استجابة السيرفر..."
-    ];
+    // Terminal Functionality
+    const terminalContent = document.getElementById("content");
+    const inputLine = document.getElementById("input-line");
+    const commandInput = document.getElementById("command-input");
+    const typingSound = document.getElementById("typing-sound");
+    const errorSound = document.getElementById("error-sound");
+    const successSound = document.getElementById("success-sound");
+    const accessSound = document.getElementById("access-sound");
 
-    let index = 0;
-    const typingSpeed = 80;
-
-    function typeLine() {
-      if (index < lines.length) {
-        const line = lines[index];
-        let charIndex = 0;
-        const interval = setInterval(() => {
-          if (charIndex < line.length) {
-            terminal.innerHTML = terminal.innerHTML.replace(/<span.*<\/span>/, '') + line[charIndex++];
-          } else {
-            clearInterval(interval);
-            terminal.innerHTML += "\n";
-            index++;
-            setTimeout(typeLine, 300);
-          }
-        }, typingSpeed);
-      } else {
-        simulateServerError();
-      }
-    }
-
-    function simulateServerError() {
-      const msgs = [
-        "\n>> تحذير: السيرفر لا يستجيب...",
-        ">> إعادة المحاولة...",
-        ">> فشل الاتصال بالخادم الخارجي!",
-        ">> إغلاق الجلسة المشفرة.",
-        ">> العملية لم تكتمل، الرجاء المحاولة لاحقًا."
-      ];
-      let i = 0;
-      const errInterval = setInterval(() => {
-        if (i < msgs.length) {
-          terminal.innerHTML += msgs[i++] + "\n";
-        } else {
-          clearInterval(errInterval);
+    const commands = {
+      "help": {
+        description: "عرض الأوامر المتاحة",
+        execute: () => {
+          addLine("الأوامر المتاحة:", "system");
+          addLine("help    - عرض هذه الرسالة", "system");
+          addLine("clear   - مسح الشاشة", "system");
+          addLine("status  - عرض حالة النظام", "system");
+          addLine("connect - الاتصال بالسيرفر الرئيسي", "system");
+          addLine("decrypt - فك تشفير الملفات", "system");
+          addLine("scan    - مسح الشبكة", "system");
+          addLine("hack    - اختراق النظام المستهدف", "system");
+          addLine("exit    - إنهاء الجلسة", "system");
         }
-      }, 1500);
+      },
+      "clear": {
+        description: "مسح محتوى الشاشة",
+        execute: () => { terminalContent.innerHTML = ''; }
+      },
+      "status": {
+        description: "عرض حالة النظام",
+        execute: () => {
+          addLine("حالة النظام:", "system");
+          addLine("النظام: نشط", "system");
+          addLine("التهديدات المكتشفة: 3", "warning");
+          addLine("الحماية: 72%", "system");
+          addLine("الذاكرة: 4.2GB/8GB", "system");
+          addLine("وحدة المعالجة: 34%", "system");
+        }
+      },
+      "connect": {
+        description: "الاتصال بالسيرفر الرئيسي",
+        execute: () => { 
+          addLine(">> جاري الاتصال بالسيرفر الرئيسي...", "warning");
+          simulateConnection(); 
+        }
+      },
+      "decrypt": {
+        description: "فك تشفير الملفات",
+        execute: () => { 
+          addLine(">> بدء عملية فك التشفير...", "warning");
+          simulateDecryption(); 
+        }
+      },
+      "scan": {
+        description: "مسح الشبكة",
+        execute: () => { 
+          addLine(">> بدء مسح الشبكة...", "warning");
+          simulateScan(); 
+        }
+      },
+      "hack": {
+        description: "اختراق النظام المستهدف",
+        execute: () => {
+          addLine(">> بدء عملية الاختراق...", "hacker");
+          simulateHack();
+        }
+      },
+      "exit": {
+        description: "إنهاء الجلسة",
+        execute: () => { 
+          addLine(">> جاري إنهاء الجلسة...", "warning");
+          setTimeout(() => { 
+            addLine(">> الجلسة مغلقة. يمكنك إغلاق النافذة الآن.", "system");
+            commandInput.disabled = true;
+          }, 1000);
+        }
+      }
+    };
+
+    let isTyping = false;
+
+    function addLine(text, className = "") {
+      const line = document.createElement("div");
+      if (className) line.className = className;
+      line.textContent = text;
+      terminalContent.appendChild(line);
+      terminal.scrollTop = terminal.scrollHeight;
+      return line;
     }
 
-    window.onload = () => {
-      typeLine();
-    };
+    function typeWriter(text, speed = 30, callback = null, className = "") {
+      isTyping = true;
+      const line = addLine("", className);
+      let i = 0;
+      
+      // Play typing sound
+      typingSound.currentTime = 0;
+      typingSound.play();
+      
+      const interval = setInterval(() => {
+        if (i < text.length) {
+          line.textContent += text.charAt(i);
+          i++;
+          terminal.scrollTop = terminal.scrollHeight;
+        } else {
+          clearInterval(interval);
+          typingSound.pause();
+          isTyping = false;
+          if (callback) callback();
+        }
+      }, speed);
+    }
+
+    function showPrompt() {
+      inputLine.querySelector('.blink').classList.remove('hidden');
+      commandInput.classList.add('hidden');
+    }
+
+    function hidePrompt() {
+      inputLine.querySelector('.blink').classList.add('hidden');
+      commandInput.classList.remove('hidden');
+      commandInput.focus();
+    }
+
+    function processCommand() {
+      const cmd = commandInput.value.trim().toLowerCase();
+      addLine(`> ${cmd}`, "command");
+      commandInput.value = '';
+      
+      if (commands[cmd]) {
+        commands[cmd].execute();
+      } else if (cmd) {
+        addLine(`خطأ: الأمر '${cmd}' غير معروف. اكتب 'help' لرؤية الأوامر المتاحة.`, "error");
+        errorSound.play();
+      }
+      
+      showPrompt();
+    }
+
+    commandInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        processCommand();
+      }
+    });
+
+    function simulateConnection() {
+      hidePrompt();
+      setTimeout(() => {
+        typeWriter(">> جاري اختراق جدار الحماية...", 50, () => {
+          setTimeout(() => {
+            typeWriter(">> العثور على ثغرة أمنية...", 50, () => {
+              setTimeout(() => {
+                typeWriter(">> الاتصال ناجح! الوصول إلى النظام الداخلي", 50, () => {
+                  successSound.play();
+                  showPrompt();
+                }, "success");
+              }, 500);
+            });
+          }, 500);
+        });
+      }, 1000);
+    }
+
+    function simulateDecryption() {
+      hidePrompt();
+      setTimeout(() => {
+        typeWriter(">> تحليل خوارزمية التشفير...", 50, () => {
+          setTimeout(() => {
+            const progressLine = addLine(">> فك التشفير: ");
+            const progressBar = document.createElement("span");
+            progressBar.className = "progress-bar";
+            const progressFill = document.createElement("span");
+            progressFill.className = "progress-fill";
+            progressBar.appendChild(progressFill);
+            progressLine.appendChild(progressBar);
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+              progress += Math.random() * 10;
+              if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+                setTimeout(() => {
+                  typeWriter("\n>> فك التشفير مكتمل بنجاح!", 30, () => {
+                    successSound.play();
+                    showPrompt();
+                  }, "success");
+                }, 500);
+              }
+              progressFill.style.width = `${progress}%`;
+            }, 200);
+          }, 500);
+        });
+      }, 1000);
+    }
+
+    function simulateScan() {
+      hidePrompt();
+      setTimeout(() => {
+        typeWriter(">> اكتشاف الأجهزة على الشبكة...", 50, () => {
+          setTimeout(() => {
+            typeWriter(">> تحليل عناوين IP...", 50, () => {
+              setTimeout(() => {
+                typeWriter(">> الأجهزة المكتشفة:", 50, () => {
+                  setTimeout(() => {
+                    addLine("192.168.1.1 - Router (vulnerable)", "system");
+                    addLine("192.168.1.2 - Main Server (protected)", "system");
+                    addLine("192.168.1.3 - Workstation (admin access detected)", "warning");
+                    setTimeout(() => {
+                      typeWriter(">> المسح اكتمل بنجاح!", 30, () => {
+                        successSound.play();
+                        showPrompt();
+                      }, "success");
+                    }, 500);
+                  }, 500);
+                });
+              }, 500);
+            });
+          }, 500);
+        });
+      }, 1000);
+    }
+
+    function simulateHack() {
+      hidePrompt();
+      setTimeout(() => {
+        typeWriter(">> البحث عن نقاط الضعف...", 50, () => {
+          setTimeout(() => {
+            typeWriter(">> استغلال الثغرات الأمنية...", 50, () => {
+              setTimeout(() => {
+                const progressLine = addLine(">> تقدم الاختراق: ");
+                const progressBar = document.createElement("span");
+                progressBar.className = "progress-bar";
+                const progressFill = document.createElement("span");
+                progressFill.className = "progress-fill";
+                progressBar.appendChild(progressFill);
+                progressLine.appendChild(progressBar);
+                
+                let progress = 0;
+                const interval = setInterval(() => {
+                  progress += Math.random() * 5;
+                  if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                      typeWriter("\n>> الاختراق ناجح! الوصول إلى النظام المستهدف", 30, () => {
+                        accessSound.play();
+                        addLine(">> تحميل شل الوصول...", "hacker");
+                        addLine(">> تنشيط الوصول عن بعد...", "hacker");
+                        addLine(">> تحميل ملفات النظام...", "hacker");
+                        setTimeout(() => {
+                          typeWriter(">> تم الحصول على صلاحيات المدير!", 30, () => {
+                            showPrompt();
+                          }, "success");
+                        }, 1500);
+                      }, "hacker");
+                    }, 500);
+                  }
+                  progressFill.style.width = `${progress}%`;
+                }, 200);
+              }, 500);
+            });
+          }, 500);
+        });
+      }, 1000);
+    }
+
+    function initTerminal() {
+      setTimeout(() => {
+        typeWriter(">> تحميل نظام الاختراق...", 50, () => {
+          setTimeout(() => {
+            typeWriter(">> تهيئة الوحدات الأمنية...", 50, () => {
+              setTimeout(() => {
+                typeWriter(">> تحميل وحدات الاختراق:", 50, () => {
+                  setTimeout(() => {
+                    addLine("- وحدة التخفي الرقمي", "system");
+                    addLine("- وحدة فك التشفير", "system");
+                    addLine("- وحدة المسح الشبكي", "system");
+                    addLine("- وحدة الاختراق الآلي", "system");
+                    setTimeout(() => {
+                      typeWriter(">> النظام جاهز للاستخدام", 50, () => {
+                        successSound.play();
+                        showPrompt();
+                      }, "success");
+                    }, 500);
+                  }, 500);
+                });
+              }, 500);
+            });
+          }, 500);
+        });
+      }, 1000);
+    }
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      columns = Math.floor(canvas.width / fontSize);
+      drops.length = columns;
+      drops.fill(1);
+    });
+
+    // Start the terminal
+    window.onload = initTerminal;
   </script>
 </body>
 </html>
