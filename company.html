@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تفاصيل الشركة</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #4CAF50;
+      --primary-hover: #45a049;
+      --secondary-color: #2196F3;
+      --secondary-hover: #0b7dda;
+      --danger-color: #f44336;
+      --danger-hover: #d32f2f;
+      --warning-color: #ff9800;
+      --warning-hover: #e68a00;
+      --text-color: #333;
+      --light-bg: #f5f5f5;
+      --white: #fff;
+      --border-color: #ddd;
+      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 15px;
+      background-color: var(--light-bg);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: var(--white);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: var(--box-shadow);
+    }
+    
+    .company-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--primary-color);
+    }
+    
+    .company-name {
+      font-size: 1.8em;
+      font-weight: bold;
+      margin: 0;
+      color: #2c3e50;
+    }
+    
+    .back-btn {
+      padding: 8px 20px;
+      background-color: var(--secondary-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-weight: 500;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .back-btn:hover {
+      background-color: var(--secondary-hover);
+      transform: translateY(-2px);
+    }
+    
+    .back-btn i {
+      margin-right: 5px;
+      font-size: 0.9rem;
+    }
+    
+    .summary-boxes {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    
+    .summary-item {
+      background: var(--white);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: var(--box-shadow);
+      transition: var(--transition);
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+    
+    .summary-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .summary-item h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: var(--primary-color);
+      font-size: 1.1em;
+      font-weight: 600;
+    }
+    
+    .summary-value {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: var(--text-color);
+      text-align: center;
+    }
+    
+    .active-licenses {
+      border-top: 4px solid var(--primary-color);
+    }
+    
+    .expired-licenses {
+      border-top: 4px solid var(--danger-color);
+    }
+    
+    .expiring-soon {
+      border-top: 4px solid var(--warning-color);
+    }
+    
+    .add-vehicle-btn {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin: 20px 0;
+      text-align: center;
+      transition: var(--transition);
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+    }
+    
+    .add-vehicle-btn:hover {
+      background: linear-gradient(135deg, var(--primary-hover), var(--primary-color));
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+    }
+    
+    .add-vehicle-btn i {
+      margin-left: 8px;
+    }
+    
+    .search-box {
+      margin-bottom: 20px;
+    }
+    
+    .search-box input {
+      width: 100%;
+      padding: 12px 20px;
+      border: 1px solid var(--border-color);
+      border-radius: 30px;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+    
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-size: 0.95em;
+      box-shadow: var(--box-shadow);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 12px;
+      text-align: center;
+    }
+    
+    th {
+      background-color: #2c3e50;
+      color: white;
+      font-weight: 600;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    
+    tr:hover {
+      background-color: #e9f7ef;
+    }
+    
+    .vehicle-image {
+      width: 80px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+    
+    .view-btn {
+      padding: 8px 15px;
+      background-color: var(--secondary-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      display: inline-block;
+    }
+    
+    .view-btn:hover {
+      background-color: var(--secondary-hover);
+    }
+    
+    .expired {
+      background-color: rgba(244, 67, 54, 0.1);
+    }
+    
+    .expiring-soon-row {
+      background-color: rgba(255, 152, 0, 0.1);
+    }
+    
+    .no-vehicles {
+      text-align: center;
+      padding: 40px;
+      color: #7f8c8d;
+      font-style: italic;
+    }
+    
+    .active-box {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    @keyframes highlight {
+      0% { background-color: rgba(255, 255, 0, 0.3); }
+      100% { background-color: transparent; }
+    }
+    
+    .highlight-row {
+      animation: highlight 1.5s;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      
+      .company-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .back-btn {
+        margin-top: 10px;
+      }
+      
+      .summary-boxes {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      table {
+        font-size: 0.85em;
+      }
+      
+      th, td {
+        padding: 8px 5px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .summary-boxes {
+        grid-template-columns: 1fr;
+      }
+      
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="companyContainer">
+    <!-- سيتم ملء هذه الصفحة بالبيانات من localStorage -->
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // تحميل بيانات الشركة
+      loadCompanyData();
+      
+      // إعداد حدث للبحث عند تغيير المدخلات
+      document.addEventListener('input', function(e) {
+        if (e.target && e.target.id === 'searchInput') {
+          searchVehicles(e.target.value);
+        }
+      });
+      
+      // إعداد حدث للنقر على زر العودة
+      document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('back-btn')) {
+          window.location.href = 'index.html';
+        }
+      });
+      
+      // إعداد حدث للنقر على زر إضافة مركبة
+      document.addEventListener('click', function(e) {
+        if (e.target && (e.target.id === 'addVehicleBtn' || e.target.closest('#addVehicleBtn'))) {
+          const companyId = new URLSearchParams(window.location.search).get('id');
+          window.location.href = `add-vehicle.html?companyId=${companyId}`;
+        }
+      });
+    });
+    
+    function loadCompanyData() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const companyId = urlParams.get('id');
+      
+      if (!companyId) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      const companies = JSON.parse(localStorage.getItem('companies')) || [];
+      const company = companies.find(c => c.id === companyId);
+      
+      if (!company) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      // تهيئة بيانات الشركة إذا لم تكن موجودة
+      if (!company.vehicles) company.vehicles = [];
+      
+      // حساب عدد المركبات حسب حالتها
+      const vehicleCounts = countVehiclesByStatus(company.vehicles);
+      
+      // عرض معلومات الشركة
+      renderCompanyPage(company, vehicleCounts);
+      
+      // عرض جدول المركبات
+      renderVehiclesTable(company.vehicles);
+    }
+    
+    function countVehiclesByStatus(vehicles) {
+      const now = new Date();
+      const soonDate = new Date();
+      soonDate.setDate(now.getDate() + 30); // 30 يوم من الآن
+      
+      let active = 0;
+      let expiring = 0;
+      let expired = 0;
+      
+      vehicles.forEach(vehicle => {
+        const status = getVehicleStatus(vehicle, now, soonDate);
+        
+        if (status === 'expired') expired++;
+        else if (status === 'expiring') expiring++;
+        else active++;
+      });
+      
+      return { active, expiring, expired };
+    }
+    
+    function getVehicleStatus(vehicle, now, soonDate) {
+      const licenseExpiry = new Date(vehicle.licenseExpiry);
+      const calibrationExpiry = new Date(vehicle.calibrationExpiry);
+      
+      // إذا كانت أي رخصة منتهية، المركبة منتهية
+      if (licenseExpiry < now || calibrationExpiry < now) {
+        return 'expired';
+      }
+      
+      // إذا كانت أي رخصة قريبة من الانتهاء، المركبة قريبة من الانتهاء
+      if (licenseExpiry <= soonDate || calibrationExpiry <= soonDate) {
+        return 'expiring';
+      }
+      
+      // وإلا المركبة نشطة
+      return 'active';
+    }
+    
+    function renderCompanyPage(company, counts) {
+      const container = document.getElementById('companyContainer');
+      container.innerHTML = `
+        <div class="company-header">
+          <h1 class="company-name">${company.name}</h1>
+          <button class="back-btn">
+            <i class="fas fa-arrow-right"></i> العودة للقائمة
+          </button>
+        </div>
+        
+        <div class="summary-boxes">
+          <div class="summary-item active-licenses" onclick="filterVehicles('active', this)">
+            <h3>المركبات النشطة</h3>
+            <div class="summary-value">${counts.active}</div>
+          </div>
+          <div class="summary-item expiring-soon" onclick="filterVehicles('expiring', this)">
+            <h3>مركبات قريبة من الانتهاء</h3>
+            <div class="summary-value">${counts.expiring}</div>
+          </div>
+          <div class="summary-item expired-licenses" onclick="filterVehicles('expired', this)">
+            <h3>مركبات منتهية</h3>
+            <div class="summary-value">${counts.expired}</div>
+          </div>
+        </div>
+        
+        <button class="add-vehicle-btn" id="addVehicleBtn">
+          <i class="fas fa-car"></i> إضافة مركبة جديدة
+        </button>
+        
+        <div class="search-box">
+          <input type="text" id="searchInput" placeholder="ابحث برقم المركبة...">
+        </div>
+        
+        <table id="vehiclesTable">
+          <thead>
+            <tr>
+              <th>الصورة</th>
+              <th>رقم المركبة</th>
+              <th>انتهاء رخصة المركبة</th>
+              <th>انتهاء شهادة العيار</th>
+              <th>التفاصيل</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      `;
+    }
+    
+    function renderVehiclesTable(vehicles) {
+      const tableBody = document.querySelector('#vehiclesTable tbody');
+      tableBody.innerHTML = '';
+      
+      if (vehicles.length === 0) {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td colspan="5" class="no-vehicles">لا توجد مركبات مسجلة</td>`;
+        tableBody.appendChild(row);
+        return;
+      }
+      
+      const now = new Date();
+      const soonDate = new Date();
+      soonDate.setDate(now.getDate() + 30);
+      
+      vehicles.forEach(vehicle => {
+        const row = document.createElement('tr');
+        const status = getVehicleStatus(vehicle, now, soonDate);
+        
+        row.dataset.status = status;
+        row.dataset.vehicleId = vehicle.id;
+        
+        if (status === 'expired') {
+          row.classList.add('expired');
+        } else if (status === 'expiring') {
+          row.classList.add('expiring-soon-row');
+        }
+        
+        row.innerHTML = `
+          <td>
+            <img src="${vehicle.image || 'https://via.placeholder.com/80x60?text=Vehicle'}" 
+                 alt="صورة المركبة" class="vehicle-image">
+          </td>
+          <td>${vehicle.vehicleNumber}</td>
+          <td>${formatDate(vehicle.licenseExpiry)}</td>
+          <td>${formatDate(vehicle.calibrationExpiry)}</td>
+          <td>
+            <a href="vehicle.html?id=${vehicle.id}&companyId=${new URLSearchParams(window.location.search).get('id')}" class="view-btn">
+              <i class="fas fa-eye"></i> عرض
+            </a>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+    
+    function filterVehicles(type, clickedElement) {
+      // إزالة التنشيط من جميع البوكسات
+      document.querySelectorAll('.summary-item').forEach(box => {
+        box.classList.remove('active-box');
+      });
+      
+      // تنشيط البوكس الذي تم الضغط عليه
+      clickedElement.classList.add('active-box');
+      
+      const rows = document.querySelectorAll('#vehiclesTable tbody tr');
+      let hasResults = false;
+      
+      rows.forEach(row => {
+        if (type === 'all' || row.dataset.status === type) {
+          row.style.display = '';
+          row.classList.add('highlight-row');
+          setTimeout(() => row.classList.remove('highlight-row'), 1500);
+          hasResults = true;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+      
+      // التمرير إلى أعلى الجدول بعد التصفية
+      document.querySelector('#vehiclesTable').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    function searchVehicles(searchTerm) {
+      const term = searchTerm.toLowerCase();
+      const rows = document.querySelectorAll('#vehiclesTable tbody tr');
+      
+      rows.forEach(row => {
+        const vehicleNumber = row.cells[1].textContent.toLowerCase();
+        if (vehicleNumber.includes(term)) {
+          row.style.display = '';
+          row.classList.add('highlight-row');
+          setTimeout(() => row.classList.remove('highlight-row'), 1500);
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+    
+    function formatDate(dateString) {
+      if (!dateString) return '-';
+      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      return new Date(dateString).toLocaleDateString('ar-EG', options);
+    }
+    
+    // جعل الدوال متاحة عالمياً
+    window.filterVehicles = filterVehicles;
+    window.searchVehicles = searchVehicles;
+  </script>
+</body>
+</html>

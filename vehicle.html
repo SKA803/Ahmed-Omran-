@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تفاصيل المركبة</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #4CAF50;
+      --primary-hover: #45a049;
+      --secondary-color: #2196F3;
+      --secondary-hover: #0b7dda;
+      --danger-color: #f44336;
+      --danger-hover: #d32f2f;
+      --warning-color: #ff9800;
+      --warning-hover: #e68a00;
+      --text-color: #333;
+      --light-bg: #f5f5f5;
+      --white: #fff;
+      --border-color: #ddd;
+      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 15px;
+      background-color: var(--light-bg);
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: var(--white);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: var(--box-shadow);
+    }
+    
+    .vehicle-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid var(--primary-color);
+    }
+    
+    .vehicle-title {
+      font-size: 1.8em;
+      font-weight: bold;
+      margin: 0;
+      color: #2c3e50;
+    }
+    
+    .back-btn {
+      padding: 8px 20px;
+      background-color: var(--secondary-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-weight: 500;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    .back-btn:hover {
+      background-color: var(--secondary-hover);
+      transform: translateY(-2px);
+    }
+    
+    .back-btn i {
+      margin-right: 5px;
+      font-size: 0.9rem;
+    }
+    
+    .vehicle-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .vehicle-image {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: var(--box-shadow);
+    }
+    
+    .vehicle-info {
+      background: var(--white);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: var(--box-shadow);
+    }
+    
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px dashed #eee;
+    }
+    
+    .info-label {
+      font-weight: bold;
+      color: #555;
+    }
+    
+    .info-value {
+      color: var(--text-color);
+    }
+    
+    .expired {
+      color: var(--danger-color);
+      font-weight: bold;
+    }
+    
+    .expiring-soon {
+      color: var(--warning-color);
+      font-weight: bold;
+    }
+    
+    .licenses-section {
+      margin-top: 30px;
+    }
+    
+    .section-title {
+      color: #2c3e50;
+      margin-top: 0;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--primary-color);
+    }
+    
+    .license-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    
+    .license-card {
+      background: var(--white);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: var(--box-shadow);
+      transition: var(--transition);
+    }
+    
+    .license-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .license-title {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin-top: 0;
+      margin-bottom: 15px;
+    }
+    
+    .license-details {
+      margin-bottom: 15px;
+    }
+    
+    .license-number {
+      font-weight: bold;
+    }
+    
+    .license-expiry {
+      margin-top: 10px;
+    }
+    
+    .action-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-edit {
+      background-color: var(--secondary-color);
+    }
+    
+    .btn-edit:hover {
+      background-color: var(--secondary-hover);
+    }
+    
+    .btn-delete {
+      background-color: var(--danger-color);
+    }
+    
+    .btn-delete:hover {
+      background-color: var(--danger-hover);
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+      
+      .vehicle-details {
+        grid-template-columns: 1fr;
+      }
+      
+      .vehicle-image {
+        height: 200px;
+      }
+      
+      .license-cards {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .vehicle-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .back-btn {
+        margin-top: 10px;
+      }
+      
+      .action-buttons {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="vehicleContainer">
+    <!-- سيتم ملء هذه الصفحة بالبيانات من localStorage -->
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const vehicleId = urlParams.get('id');
+      const companyId = urlParams.get('companyId');
+      
+      if (!vehicleId || !companyId) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      const companies = JSON.parse(localStorage.getItem('companies')) || [];
+      const company = companies.find(c => c.id === companyId);
+      
+      if (!company) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      const vehicle = company.vehicles.find(v => v.id === vehicleId);
+      
+      if (!vehicle) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      // حساب حالة كل رخصة
+      const now = new Date();
+      const soonDate = new Date();
+      soonDate.setDate(now.getDate() + 30); // 30 يوم من الآن
+      
+      const licenseExpiry = new Date(vehicle.licenseExpiry);
+      const calibrationExpiry = new Date(vehicle.calibrationExpiry);
+      const driverLicenseExpiry = new Date(vehicle.driverLicenseExpiry);
+      const safeDrivingExpiry = new Date(vehicle.safeDrivingExpiry);
+      
+      const licenseStatus = getLicenseStatus(licenseExpiry, now, soonDate);
+      const calibrationStatus = getLicenseStatus(calibrationExpiry, now, soonDate);
+      const driverLicenseStatus = getLicenseStatus(driverLicenseExpiry, now, soonDate);
+      const safeDrivingStatus = getLicenseStatus(safeDrivingExpiry, now, soonDate);
+      
+      // عرض معلومات المركبة
+      const container = document.getElementById('vehicleContainer');
+      container.innerHTML = `
+        <div class="vehicle-header">
+          <h1 class="vehicle-title">${vehicle.vehicleNumber}</h1>
+          <a href="company.html?id=${company.id}" class="back-btn">
+            <i class="fas fa-arrow-right"></i> العودة
+          </a>
+        </div>
+        
+        <div class="vehicle-details">
+          <div>
+            <img src="${vehicle.image}" alt="صورة المركبة" class="vehicle-image">
+          </div>
+          
+          <div class="vehicle-info">
+            <div class="info-row">
+              <span class="info-label">التاريخ:</span>
+              <span class="info-value">${formatDate(vehicle.date)}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">اليوم:</span>
+              <span class="info-value">${vehicle.day}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">رقم المركبة:</span>
+              <span class="info-value">${vehicle.vehicleNumber}</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="licenses-section">
+          <h2 class="section-title"><i class="fas fa-id-card"></i> الرخص والشهادات</h2>
+          
+          <div class="license-cards">
+            <div class="license-card">
+              <h3 class="license-title">رخصة المركبة</h3>
+              <div class="license-details">
+                <div class="info-row">
+                  <span class="info-label">الحالة:</span>
+                  <span class="info-value ${licenseStatus.class}">${licenseStatus.text}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">تاريخ الانتهاء:</span>
+                  <span class="info-value ${licenseStatus.class}">${formatDate(vehicle.licenseExpiry)}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="license-card">
+              <h3 class="license-title">شهادة العيار</h3>
+              <div class="license-details">
+                <div class="info-row">
+                  <span class="info-label">رقم الشهادة:</span>
+                  <span class="info-value">${vehicle.calibrationCertificate || 'غير مسجل'}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">الحالة:</span>
+                  <span class="info-value ${calibrationStatus.class}">${calibrationStatus.text}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">تاريخ الانتهاء:</span>
+                  <span class="info-value ${calibrationStatus.class}">${formatDate(vehicle.calibrationExpiry)}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="license-card">
+              <h3 class="license-title">رخصة السائق</h3>
+              <div class="license-details">
+                <div class="info-row">
+                  <span class="info-label">رقم الرخصة:</span>
+                  <span class="info-value">${vehicle.driverLicense || 'غير مسجل'}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">الحالة:</span>
+                  <span class="info-value ${driverLicenseStatus.class}">${driverLicenseStatus.text}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">تاريخ الانتهاء:</span>
+                  <span class="info-value ${driverLicenseStatus.class}">${formatDate(vehicle.driverLicenseExpiry)}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="license-card">
+              <h3 class="license-title">شهادة القيادة الآمنة</h3>
+              <div class="license-details">
+                <div class="info-row">
+                  <span class="info-label">رقم الشهادة:</span>
+                  <span class="info-value">${vehicle.safeDriving || 'غير مسجل'}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">الحالة:</span>
+                  <span class="info-value ${safeDrivingStatus.class}">${safeDrivingStatus.text}</span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">تاريخ الانتهاء:</span>
+                  <span class="info-value ${safeDrivingStatus.class}">${formatDate(vehicle.safeDrivingExpiry)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="action-buttons">
+          <button class="btn btn-edit" id="editBtn">
+            <i class="fas fa-edit"></i> تعديل
+          </button>
+          <button class="btn btn-delete" id="deleteBtn">
+            <i class="fas fa-trash"></i> حذف
+          </button>
+        </div>
+      `;
+      
+      // إعداد الأحداث
+      document.getElementById('editBtn').addEventListener('click', function() {
+        window.location.href = `edit-vehicle.html?id=${vehicle.id}&companyId=${company.id}`;
+      });
+      
+      document.getElementById('deleteBtn').addEventListener('click', function() {
+        if (confirm('هل أنت متأكد من حذف هذه المركبة؟')) {
+          const companyIndex = companies.findIndex(c => c.id === company.id);
+          const vehicleIndex = companies[companyIndex].vehicles.findIndex(v => v.id === vehicle.id);
+          
+          companies[companyIndex].vehicles.splice(vehicleIndex, 1);
+          localStorage.setItem('companies', JSON.stringify(companies));
+          
+          alert('تم حذف المركبة بنجاح');
+          window.location.href = `company.html?id=${company.id}`;
+        }
+      });
+    });
+    
+    function getLicenseStatus(expiryDate, now, soonDate) {
+      if (!expiryDate) return { text: 'غير مسجل', class: '' };
+      
+      if (expiryDate < now) {
+        return { text: 'منتهية', class: 'expired' };
+      } else if (expiryDate <= soonDate) {
+        return { text: 'قريبة من الانتهاء', class: 'expiring-soon' };
+      } else {
+        return { text: 'نشطة', class: '' };
+      }
+    }
+    
+    function formatDate(dateString) {
+      if (!dateString) return 'غير محدد';
+      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      return new Date(dateString).toLocaleDateString('ar-EG', options);
+    }
+  </script>
+</body>
+</html>
