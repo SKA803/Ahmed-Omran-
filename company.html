@@ -216,13 +216,6 @@
       background-color: #e9f7ef;
     }
     
-    .vehicle-image {
-      width: 80px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 4px;
-    }
-    
     .view-btn {
       padding: 8px 15px;
       background-color: var(--secondary-color);
@@ -265,6 +258,30 @@
     
     .highlight-row {
       animation: highlight 1.5s;
+    }
+    
+    /* تعديلات جديدة */
+    .license-status {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.8em;
+      font-weight: bold;
+    }
+    
+    .status-active {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: var(--primary-color);
+    }
+    
+    .status-expiring {
+      background-color: rgba(255, 152, 0, 0.1);
+      color: var(--warning-color);
+    }
+    
+    .status-expired {
+      background-color: rgba(244, 67, 54, 0.1);
+      color: var(--danger-color);
     }
     
     @media (max-width: 768px) {
@@ -392,19 +409,15 @@
     
     function getVehicleStatus(vehicle, now, soonDate) {
       const licenseExpiry = new Date(vehicle.licenseExpiry);
-      const calibrationExpiry = new Date(vehicle.calibrationExpiry);
       
-      // إذا كانت أي رخصة منتهية، المركبة منتهية
-      if (licenseExpiry < now || calibrationExpiry < now) {
+      if (licenseExpiry < now) {
         return 'expired';
       }
       
-      // إذا كانت أي رخصة قريبة من الانتهاء، المركبة قريبة من الانتهاء
-      if (licenseExpiry <= soonDate || calibrationExpiry <= soonDate) {
+      if (licenseExpiry <= soonDate) {
         return 'expiring';
       }
       
-      // وإلا المركبة نشطة
       return 'active';
     }
     
@@ -438,16 +451,15 @@
         </button>
         
         <div class="search-box">
-          <input type="text" id="searchInput" placeholder="ابحث برقم المركبة...">
+          <input type="text" id="searchInput" placeholder="ابحث برقم الرخصة...">
         </div>
         
         <table id="vehiclesTable">
           <thead>
             <tr>
-              <th>الصورة</th>
-              <th>رقم المركبة</th>
-              <th>انتهاء رخصة المركبة</th>
-              <th>انتهاء شهادة العيار</th>
+              <th>رقم الرخصة</th>
+              <th>تاريخ الانتهاء</th>
+              <th>الحالة</th>
               <th>التفاصيل</th>
             </tr>
           </thead>
@@ -462,7 +474,7 @@
       
       if (vehicles.length === 0) {
         const row = document.createElement('tr');
-        row.innerHTML = `<td colspan="5" class="no-vehicles">لا توجد مركبات مسجلة</td>`;
+        row.innerHTML = `<td colspan="4" class="no-vehicles">لا توجد مركبات مسجلة</td>`;
         tableBody.appendChild(row);
         return;
       }
@@ -484,17 +496,18 @@
           row.classList.add('expiring-soon-row');
         }
         
+        const statusText = status === 'active' ? 'نشطة' : 
+                         status === 'expiring' ? 'قريبة من الانتهاء' : 'منتهية';
+        const statusClass = status === 'active' ? 'status-active' : 
+                          status === 'expiring' ? 'status-expiring' : 'status-expired';
+        
         row.innerHTML = `
-          <td>
-            <img src="${vehicle.image || 'https://via.placeholder.com/80x60?text=Vehicle'}" 
-                 alt="صورة المركبة" class="vehicle-image">
-          </td>
-          <td>${vehicle.vehicleNumber}</td>
+          <td>${vehicle.licenseNumber}</td>
           <td>${formatDate(vehicle.licenseExpiry)}</td>
-          <td>${formatDate(vehicle.calibrationExpiry)}</td>
+          <td><span class="license-status ${statusClass}">${statusText}</span></td>
           <td>
             <a href="vehicle.html?id=${vehicle.id}&companyId=${new URLSearchParams(window.location.search).get('id')}" class="view-btn">
-              <i class="fas fa-eye"></i> عرض
+              <i class="fas fa-eye"></i> عرض المزيد
             </a>
           </td>
         `;
@@ -534,8 +547,8 @@
       const rows = document.querySelectorAll('#vehiclesTable tbody tr');
       
       rows.forEach(row => {
-        const vehicleNumber = row.cells[1].textContent.toLowerCase();
-        if (vehicleNumber.includes(term)) {
+        const licenseNumber = row.cells[0].textContent.toLowerCase();
+        if (licenseNumber.includes(term)) {
           row.style.display = '';
           row.classList.add('highlight-row');
           setTimeout(() => row.classList.remove('highlight-row'), 1500);
