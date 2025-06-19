@@ -13,8 +13,9 @@
       --light-color: #f8f9fa;
       --dark-color: #212529;
       --danger-color: #f72585;
-      --border-radius: 12px;
-      --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      --success-color: #4cc9f0;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       --transition: all 0.3s ease;
     }
     
@@ -26,53 +27,28 @@
     
     body {
       font-family: 'Tajawal', Arial, sans-serif;
-      margin: 0;
-      padding: 0;
       background-color: #f5f7ff;
       color: var(--dark-color);
       line-height: 1.6;
+      padding: 20px;
     }
     
     .container {
       max-width: 800px;
-      margin: 20px auto;
+      margin: 0 auto;
       background: white;
-      padding: 30px;
+      padding: 25px;
       border-radius: var(--border-radius);
       box-shadow: var(--box-shadow);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .container::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 100%;
-      height: 8px;
-      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
     }
     
     h1 {
       color: var(--primary-color);
       text-align: center;
-      margin-bottom: 30px;
-      font-size: 2rem;
-      position: relative;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
       padding-bottom: 15px;
-    }
-    
-    h1::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      right: 50%;
-      transform: translateX(50%);
-      width: 80px;
-      height: 4px;
-      background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
-      border-radius: 2px;
+      border-bottom: 2px solid #eee;
     }
     
     h1 i {
@@ -81,7 +57,6 @@
     
     .form-group {
       margin-bottom: 20px;
-      position: relative;
     }
     
     label {
@@ -94,12 +69,11 @@
     input, select {
       width: 100%;
       padding: 12px 15px;
-      border: 1px solid rgba(0, 0, 0, 0.1);
+      border: 1px solid #ddd;
       border-radius: var(--border-radius);
-      font-family: 'Tajawal', Arial, sans-serif;
+      font-family: 'Tajawal', sans-serif;
       font-size: 1rem;
       transition: var(--transition);
-      background-color: var(--light-color);
     }
     
     input:focus, select:focus {
@@ -109,109 +83,149 @@
     }
     
     button {
-      width: 100%;
-      padding: 15px;
-      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      background: var(--primary-color);
       color: white;
       border: none;
+      padding: 12px 20px;
       border-radius: var(--border-radius);
-      font-size: 1.1rem;
+      font-size: 1rem;
       cursor: pointer;
-      margin-top: 25px;
-      font-weight: bold;
       transition: var(--transition);
-      box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
     
     button:hover {
-      background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(67, 97, 238, 0.4);
+      background: var(--secondary-color);
     }
     
     button i {
       margin-left: 8px;
     }
     
-    .back-btn {
+    .btn-block {
       display: block;
-      text-align: center;
+      width: 100%;
+      padding: 15px;
       margin-top: 20px;
-      color: var(--primary-color);
-      text-decoration: none;
-      font-weight: 600;
-      transition: var(--transition);
-      padding: 10px;
-      border-radius: var(--border-radius);
     }
     
-    .back-btn:hover {
-      background-color: rgba(67, 97, 238, 0.1);
+    /* تحميل الصور */
+    .upload-section {
+      margin: 25px 0;
     }
     
-    .back-btn i {
-      margin-right: 5px;
-    }
-    
-    .input-icon {
-      position: absolute;
-      left: 15px;
-      top: 40px;
-      color: #aaa;
-    }
-    
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-    
-    .footer {
+    .upload-btn {
+      background: #f8f9fa;
+      border: 2px dashed #ccc;
+      padding: 20px;
       text-align: center;
-      margin-top: 40px;
-      padding-top: 20px;
-      border-top: 1px solid rgba(0, 0, 0, 0.1);
-      color: #666;
-      font-size: 0.9rem;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: var(--transition);
+      margin-bottom: 15px;
     }
     
-    .footer a {
-      color: var(--primary-color);
-      text-decoration: none;
-      font-weight: 500;
+    .upload-btn:hover {
+      border-color: var(--accent-color);
+      background: rgba(72, 149, 239, 0.05);
+    }
+    
+    .upload-btn i {
+      font-size: 2rem;
+      color: var(--accent-color);
+      margin-bottom: 10px;
+      display: block;
+    }
+    
+    .file-input {
+      display: none;
+    }
+    
+    .progress-container {
+      width: 100%;
+      background: #f1f1f1;
+      border-radius: 5px;
+      margin: 15px 0;
+      overflow: hidden;
+      display: none;
+    }
+    
+    .progress-bar {
+      height: 10px;
+      background: var(--success-color);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    
+    .upload-status {
+      text-align: center;
+      color: var(--accent-color);
+      margin: 10px 0;
+      font-size: 0.9rem;
+      display: none;
+    }
+    
+    .thumbnails-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .thumbnail {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: 5px;
+      overflow: hidden;
+      border: 1px solid #eee;
+    }
+    
+    .thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .delete-btn {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      background: var(--danger-color);
+      color: white;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
+    .no-images {
+      color: #666;
+      text-align: center;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: var(--border-radius);
+      width: 100%;
     }
     
     @media (max-width: 768px) {
       .container {
-        margin: 10px;
         padding: 20px;
-      }
-      
-      h1 {
-        font-size: 1.7rem;
-      }
-      
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .container {
-        padding: 15px;
       }
       
       h1 {
         font-size: 1.5rem;
       }
       
-      input, select {
-        padding: 10px 12px;
-      }
-      
-      button {
-        padding: 12px;
-        font-size: 1rem;
+      .thumbnail {
+        width: 70px;
+        height: 70px;
       }
     }
   </style>
@@ -222,174 +236,221 @@
     
     <form id="vehicleForm">
       <div class="form-group">
-        <label for="vehicleNumber">رقم المركبة</label>
-        <i class="fas fa-car input-icon"></i>
-        <input type="text" id="vehicleNumber" required placeholder="أدخل رقم المركبة">
+        <label for="licenseNumber">رقم الرخصة</label>
+        <input type="text" id="licenseNumber" required placeholder="أدخل رقم الرخصة">
       </div>
       
-      <div class="form-row">
-        <div class="form-group">
-          <label for="date">التاريخ</label>
-          <i class="fas fa-calendar input-icon"></i>
-          <input type="date" id="date" required>
+      <div class="form-group">
+        <label for="licenseExpiry">تاريخ انتهاء الرخصة</label>
+        <input type="text" id="licenseExpiry" required placeholder="أدخل تاريخ الانتهاء (مثال: 12/05/2025)">
+      </div>
+      
+      <div class="upload-section">
+        <label>تحميل صور الرخصة</label>
+        
+        <div class="upload-btn" id="uploadBtn">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p>انقر لاختيار الصور أو اسحبها هنا</p>
+          <small>يمكنك تحميل أكثر من صورة (JPEG, PNG)</small>
         </div>
         
-        <div class="form-group">
-          <label for="day">اليوم</label>
-          <i class="fas fa-calendar-day input-icon"></i>
-          <input type="text" id="day" readonly>
+        <input type="file" id="fileInput" class="file-input" multiple accept="image/*">
+        
+        <div class="progress-container" id="progressContainer">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="upload-status" id="uploadStatus"></div>
+        
+        <div class="thumbnails-container" id="thumbnailsContainer">
+          <div class="no-images">لا توجد صور مرفوعة بعد</div>
         </div>
       </div>
       
-      <div class="form-group">
-        <label for="licenseExpiry">تاريخ انتهاء رخصة المركبة</label>
-        <i class="fas fa-id-card input-icon"></i>
-        <input type="date" id="licenseExpiry" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="calibrationCertificate">شهادة العيار</label>
-        <i class="fas fa-file-certificate input-icon"></i>
-        <input type="text" id="calibrationCertificate" placeholder="أدخل رقم شهادة العيار">
-      </div>
-      
-      <div class="form-group">
-        <label for="calibrationExpiry">انتهاء شهادة العيار</label>
-        <i class="fas fa-calendar-times input-icon"></i>
-        <input type="date" id="calibrationExpiry">
-      </div>
-      
-      <div class="form-group">
-        <label for="driverLicense">رخصة السائق</label>
-        <i class="fas fa-id-card input-icon"></i>
-        <input type="text" id="driverLicense" placeholder="أدخل رقم رخصة السائق">
-      </div>
-      
-      <div class="form-group">
-        <label for="driverLicenseExpiry">انتهاء رخصة السائق</label>
-        <i class="fas fa-calendar-times input-icon"></i>
-        <input type="date" id="driverLicenseExpiry">
-      </div>
-      
-      <div class="form-group">
-        <label for="safeDriving">شهادة القيادة الآمنة</label>
-        <i class="fas fa-certificate input-icon"></i>
-        <input type="text" id="safeDriving" placeholder="أدخل رقم شهادة القيادة الآمنة">
-      </div>
-      
-      <div class="form-group">
-        <label for="safeDrivingExpiry">انتهاء شهادة القيادة الآمنة</label>
-        <i class="fas fa-calendar-times input-icon"></i>
-        <input type="date" id="safeDrivingExpiry">
-      </div>
-      
-      <div class="form-group">
-        <label for="vehicleImage">صورة المركبة (رابط)</label>
-        <i class="fas fa-image input-icon"></i>
-        <input type="text" id="vehicleImage" placeholder="أدخل رابط صورة المركبة">
-      </div>
-      
-      <button type="submit" id="saveBtn">
-        <i class="fas fa-save"></i> حفظ المركبة
+      <button type="submit" class="btn-block">
+        <i class="fas fa-save"></i> حفظ البيانات
       </button>
-      <a href="#" id="backBtn" class="back-btn">
-        <i class="fas fa-arrow-right"></i> العودة
-      </a>
     </form>
-    
-    <div class="footer">
-      <p>جميع الحقوق محفوظة &copy; <span id="year"></span> | تم تطوير هذا الموقع بواسطة المطور <a href="#">عبد الله ندا</a></p>
-    </div>
   </div>
 
   <script>
-    // إضافة السنة الحالية
-    document.getElementById('year').textContent = new Date().getFullYear();
+    // عناصر DOM
+    const uploadBtn = document.getElementById('uploadBtn');
+    const fileInput = document.getElementById('fileInput');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const thumbnailsContainer = document.getElementById('thumbnailsContainer');
+    const vehicleForm = document.getElementById('vehicleForm');
     
-    // تعيين تاريخ اليوم كقيمة افتراضية
-    const today = new Date();
-    const dateStr = today.toISOString().split('T')[0];
-    document.getElementById('date').value = dateStr;
+    // مصفوفة لحفظ الصور
+    let uploadedImages = [];
     
-    // حساب اليوم عند تغيير التاريخ
-    document.getElementById('date').addEventListener('change', function() {
-      const date = new Date(this.value);
-      const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-      document.getElementById('day').value = days[date.getDay()];
+    // أحداث تحميل الصور
+    uploadBtn.addEventListener('click', () => fileInput.click());
+    
+    // سحب وإسقاط الملفات
+    uploadBtn.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadBtn.style.borderColor = 'var(--accent-color)';
+      uploadBtn.style.backgroundColor = 'rgba(72, 149, 239, 0.1)';
     });
     
-    // حساب اليوم الحالي
-    const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-    document.getElementById('day').value = days[today.getDay()];
+    uploadBtn.addEventListener('dragleave', () => {
+      uploadBtn.style.borderColor = '#ccc';
+      uploadBtn.style.backgroundColor = '#f8f9fa';
+    });
     
-    // إدارة النموذج
-    document.getElementById('vehicleForm').addEventListener('submit', function(e) {
+    uploadBtn.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadBtn.style.borderColor = '#ccc';
+      uploadBtn.style.backgroundColor = '#f8f9fa';
+      
+      if (e.dataTransfer.files.length > 0) {
+        fileInput.files = e.dataTransfer.files;
+        handleFileUpload();
+      }
+    });
+    
+    fileInput.addEventListener('change', handleFileUpload);
+    
+    // معالجة تحميل الملفات
+    function handleFileUpload() {
+      const files = fileInput.files;
+      if (!files || files.length === 0) return;
+      
+      // إظهار شريط التقدم
+      progressContainer.style.display = 'block';
+      progressBar.style.width = '0%';
+      uploadStatus.textContent = `جاري تحميل ${files.length} صورة...`;
+      uploadStatus.style.display = 'block';
+      
+      // مسح الرسالة "لا توجد صور"
+      if (thumbnailsContainer.querySelector('.no-images')) {
+        thumbnailsContainer.innerHTML = '';
+      }
+      
+      let loadedCount = 0;
+      
+      // معالجة كل ملف
+      Array.from(files).forEach((file) => {
+        if (!file.type.match('image.*')) return;
+        
+        const reader = new FileReader();
+        
+        reader.onloadstart = () => {
+          // يمكن إضافة أي تحضيرات هنا
+        };
+        
+        reader.onprogress = (e) => {
+          if (e.lengthComputable) {
+            const percentLoaded = Math.round((e.loaded / e.total) * 100);
+            progressBar.style.width = `${percentLoaded}%`;
+          }
+        };
+        
+        reader.onload = (e) => {
+          loadedCount++;
+          
+          // إضافة الصورة إلى المصفوفة
+          uploadedImages.push({
+            name: file.name,
+            size: (file.size / 1024).toFixed(2) + ' KB',
+            url: e.target.result
+          });
+          
+          // تحديث شريط التقدم
+          const totalPercent = Math.round((loadedCount / files.length) * 100);
+          progressBar.style.width = `${totalPercent}%`;
+          
+          // إذا تم تحميل جميع الصور
+          if (loadedCount === files.length) {
+            setTimeout(() => {
+              progressContainer.style.display = 'none';
+              uploadStatus.textContent = `تم تحميل ${loadedCount} صورة بنجاح`;
+              
+              setTimeout(() => {
+                uploadStatus.style.display = 'none';
+              }, 2000);
+              
+              renderThumbnails();
+            }, 500);
+          }
+        };
+        
+        reader.onerror = () => {
+          uploadStatus.textContent = 'حدث خطأ أثناء تحميل الصور';
+          uploadStatus.style.color = 'var(--danger-color)';
+        };
+        
+        reader.readAsDataURL(file);
+      });
+    }
+    
+    // عرض الصور المصغرة
+    function renderThumbnails() {
+      thumbnailsContainer.innerHTML = '';
+      
+      if (uploadedImages.length === 0) {
+        thumbnailsContainer.innerHTML = '<div class="no-images">لا توجد صور مرفوعة بعد</div>';
+        return;
+      }
+      
+      uploadedImages.forEach((image, index) => {
+        const thumbnail = document.createElement('div');
+        thumbnail.className = 'thumbnail';
+        thumbnail.innerHTML = `
+          <img src="${image.url}" alt="${image.name}">
+          <div class="delete-btn" data-index="${index}">×</div>
+        `;
+        thumbnailsContainer.appendChild(thumbnail);
+      });
+      
+      // إضافة أحداث لحذف الصور
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const index = parseInt(btn.getAttribute('data-index'));
+          uploadedImages.splice(index, 1);
+          renderThumbnails();
+        });
+      });
+    }
+    
+    // إرسال النموذج
+    vehicleForm.addEventListener('submit', (e) => {
       e.preventDefault();
       
-      const urlParams = new URLSearchParams(window.location.search);
-      const companyId = urlParams.get('companyId');
-      
-      if (!companyId) {
-        alert('خطأ في تحديد الشركة');
-        return;
-      }
-      
-      const vehicleNumber = document.getElementById('vehicleNumber').value;
-      const date = document.getElementById('date').value;
-      const day = document.getElementById('day').value;
+      const licenseNumber = document.getElementById('licenseNumber').value;
       const licenseExpiry = document.getElementById('licenseExpiry').value;
-      const calibrationCertificate = document.getElementById('calibrationCertificate').value;
-      const calibrationExpiry = document.getElementById('calibrationExpiry').value;
-      const driverLicense = document.getElementById('driverLicense').value;
-      const driverLicenseExpiry = document.getElementById('driverLicenseExpiry').value;
-      const safeDriving = document.getElementById('safeDriving').value;
-      const safeDrivingExpiry = document.getElementById('safeDrivingExpiry').value;
-      const vehicleImage = document.getElementById('vehicleImage').value;
       
-      if (!vehicleNumber || !date || !licenseExpiry) {
-        alert('الرجاء إدخال البيانات المطلوبة');
+      if (!licenseNumber || !licenseExpiry) {
+        alert('الرجاء إدخال جميع البيانات المطلوبة');
         return;
       }
       
-      const companies = JSON.parse(localStorage.getItem('companies')) || [];
-      const companyIndex = companies.findIndex(c => c.id === companyId);
-      
-      if (companyIndex === -1) {
-        alert('الشركة غير موجودة');
-        return;
+      if (uploadedImages.length === 0) {
+        if (!confirm('لم تقم بتحميل أي صور. هل تريد المتابعة بدون صور؟')) {
+          return;
+        }
       }
       
-      const newVehicle = {
-        id: Date.now().toString(),
-        vehicleNumber,
-        date,
-        day,
+      // هنا يمكنك إضافة كود لحفظ البيانات
+      alert('تم حفظ البيانات بنجاح');
+      console.log({
+        licenseNumber,
         licenseExpiry,
-        calibrationCertificate,
-        calibrationExpiry,
-        driverLicense,
-        driverLicenseExpiry,
-        safeDriving,
-        safeDrivingExpiry,
-        image: vehicleImage || 'https://via.placeholder.com/300x200?text=Vehicle'
-      };
+        images: uploadedImages
+      });
       
-      companies[companyIndex].vehicles.push(newVehicle);
-      localStorage.setItem('companies', JSON.stringify(companies));
-      
-      alert('تم إضافة المركبة بنجاح');
-      window.location.href = `company.html?id=${companyId}`;
-    });
-    
-    // زر العودة
-    document.getElementById('backBtn').addEventListener('click', function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const companyId = urlParams.get('companyId');
-      window.location.href = `company.html?id=${companyId}`;
+      // إعادة تعيين النموذج
+      vehicleForm.reset();
+      uploadedImages = [];
+      renderThumbnails();
     });
   </script>
   
-  <!-- إضافة خط عربي -->
+  <!-- خط عربي -->
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 </body>
 </html>
