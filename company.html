@@ -409,12 +409,15 @@
     
     function getVehicleStatus(vehicle, now, soonDate) {
       const licenseExpiry = new Date(vehicle.licenseExpiry);
+      const calibrationExpiry = vehicle.calibrationExpiry ? new Date(vehicle.calibrationExpiry) : null;
       
-      if (licenseExpiry < now) {
+      // إذا كانت الرخصة أو العيار منتهي
+      if (licenseExpiry < now || (calibrationExpiry && calibrationExpiry < now)) {
         return 'expired';
       }
       
-      if (licenseExpiry <= soonDate) {
+      // إذا كانت الرخصة أو العيار قريبة من الانتهاء
+      if (licenseExpiry <= soonDate || (calibrationExpiry && calibrationExpiry <= soonDate)) {
         return 'expiring';
       }
       
@@ -458,7 +461,8 @@
           <thead>
             <tr>
               <th>رقم الرخصة</th>
-              <th>تاريخ الانتهاء</th>
+              <th>تاريخ انتهاء الرخصة</th>
+              <th>تاريخ انتهاء العيار</th>
               <th>الحالة</th>
               <th>التفاصيل</th>
             </tr>
@@ -474,7 +478,7 @@
       
       if (vehicles.length === 0) {
         const row = document.createElement('tr');
-        row.innerHTML = `<td colspan="4" class="no-vehicles">لا توجد مركبات مسجلة</td>`;
+        row.innerHTML = `<td colspan="5" class="no-vehicles">لا توجد مركبات مسجلة</td>`;
         tableBody.appendChild(row);
         return;
       }
@@ -504,6 +508,7 @@
         row.innerHTML = `
           <td>${vehicle.licenseNumber}</td>
           <td>${formatDate(vehicle.licenseExpiry)}</td>
+          <td>${vehicle.calibrationExpiry ? formatDate(vehicle.calibrationExpiry) : '-'}</td>
           <td><span class="license-status ${statusClass}">${statusText}</span></td>
           <td>
             <a href="vehicle.html?id=${vehicle.id}&companyId=${new URLSearchParams(window.location.search).get('id')}" class="view-btn">
