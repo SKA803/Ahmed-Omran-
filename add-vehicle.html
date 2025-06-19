@@ -242,7 +242,12 @@
       
       <div class="form-group">
         <label for="licenseExpiry">تاريخ انتهاء الرخصة</label>
-        <input type="text" id="licenseExpiry" required placeholder="أدخل تاريخ الانتهاء (مثال: 12/05/2025)">
+        <input type="date" id="licenseExpiry" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="calibrationExpiry">تاريخ انتهاء العيار</label>
+        <input type="date" id="calibrationExpiry">
       </div>
       
       <div class="upload-section">
@@ -338,17 +343,6 @@
         
         const reader = new FileReader();
         
-        reader.onloadstart = () => {
-          // يمكن إضافة أي تحضيرات هنا
-        };
-        
-        reader.onprogress = (e) => {
-          if (e.lengthComputable) {
-            const percentLoaded = Math.round((e.loaded / e.total) * 100);
-            progressBar.style.width = `${percentLoaded}%`;
-          }
-        };
-        
         reader.onload = (e) => {
           loadedCount++;
           
@@ -356,7 +350,7 @@
           uploadedImages.push({
             name: file.name,
             size: (file.size / 1024).toFixed(2) + ' KB',
-            url: e.target.result
+            data: e.target.result
           });
           
           // تحديث شريط التقدم
@@ -400,7 +394,7 @@
         const thumbnail = document.createElement('div');
         thumbnail.className = 'thumbnail';
         thumbnail.innerHTML = `
-          <img src="${image.url}" alt="${image.name}">
+          <img src="${image.data}" alt="${image.name}">
           <div class="delete-btn" data-index="${index}">×</div>
         `;
         thumbnailsContainer.appendChild(thumbnail);
@@ -421,32 +415,46 @@
     vehicleForm.addEventListener('submit', (e) => {
       e.preventDefault();
       
-      const licenseNumber = document.getElementById('licenseNumber').value;
-      const licenseExpiry = document.getElementById('licenseExpiry').value;
+      const urlParams = new URLSearchParams(window.location.search);
+      const companyId = urlParams.get('companyId');
       
-      if (!licenseNumber || !licenseExpiry) {
-        alert('الرجاء إدخال جميع البيانات المطلوبة');
+      if (!companyId) {
+        alert('خطأ في تحديد الشركة');
         return;
       }
       
-      if (uploadedImages.length === 0) {
-        if (!confirm('لم تقم بتحميل أي صور. هل تريد المتابعة بدون صور؟')) {
-          return;
-        }
+      const licenseNumber = document.getElementById('licenseNumber').value;
+      const licenseExpiry = document.getElementById('licenseExpiry').value;
+      const calibrationExpiry = document.getElementById('calibrationExpiry').value;
+      
+      if (!licenseNumber || !licenseExpiry) {
+        alert('الرجاء إدخال البيانات المطلوبة');
+        return;
       }
       
-      // هنا يمكنك إضافة كود لحفظ البيانات
-      alert('تم حفظ البيانات بنجاح');
-      console.log({
+      const companies = JSON.parse(localStorage.getItem('companies')) || [];
+      const companyIndex = companies.findIndex(c => c.id === companyId);
+      
+      if (companyIndex === -1) {
+        alert('الشركة غير موجودة');
+        return;
+      }
+      
+      // إنشاء مركبة جديدة
+      const newVehicle = {
+        id: Date.now().toString(),
         licenseNumber,
         licenseExpiry,
-        images: uploadedImages
-      });
+        calibrationExpiry: calibrationExpiry || null,
+        images: [...uploadedImages]
+      };
       
-      // إعادة تعيين النموذج
-      vehicleForm.reset();
-      uploadedImages = [];
-      renderThumbnails();
+      // إضافة المركبة للشركة
+      companies[companyIndex].vehicles.push(newVehicle);
+      localStorage.setItem('companies', JSON.stringify(companies));
+      
+      alert('تم إضافة المركبة بنجاح');
+      window.location.href = `company.html?id=${companyId}`;
     });
   </script>
   
