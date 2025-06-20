@@ -342,13 +342,13 @@
       
       <div class="form-group">
         <label for="licenseExpiry">تاريخ انتهاء الرخصة</label>
-        <input type="text" id="licenseExpiry" required placeholder="أدخل تاريخ انتهاء الرخصة (يوم/شهر/سنة)">
+        <input type="text" id="licenseExpiry" required placeholder="يوم/شهر/سنة (مثال: 25/12/2023)">
         <div class="date-format-hint">صيغة التاريخ: يوم/شهر/سنة (مثال: 25/12/2023)</div>
       </div>
       
       <div class="form-group">
         <label for="calibrationExpiry">تاريخ انتهاء العيار</label>
-        <input type="text" id="calibrationExpiry" placeholder="أدخل تاريخ انتهاء العيار (يوم/شهر/سنة)">
+        <input type="text" id="calibrationExpiry" placeholder="يوم/شهر/سنة (مثال: 25/12/2023)">
         <div class="date-format-hint">صيغة التاريخ: يوم/شهر/سنة (مثال: 25/12/2023)</div>
       </div>
       
@@ -358,7 +358,7 @@
         <div class="upload-btn" id="uploadBtn">
           <i class="fas fa-cloud-upload-alt"></i>
           <p>انقر لاختيار الصور أو اسحبها هنا</p>
-          <small>يمكنك تحميل أكثر من صورة (JPEG, PNG)</small>
+          <small>يمكنك تحميل أكثر من صورة (JPEG, PNG, JPG, GIF)</small>
         </div>
         
         <input type="file" id="fileInput" class="file-input" multiple accept="image/*">
@@ -457,7 +457,10 @@
       let loadedCount = 0;
       
       Array.from(files).forEach((file) => {
-        if (!file.type.match('image.*')) return;
+        if (!file.type.match('image.*')) {
+          loadedCount++;
+          return;
+        }
         
         const reader = new FileReader();
         
@@ -609,12 +612,21 @@
       
       if (!day || !month || !year) return null;
       
-      const date = new Date(`${year}-${month}-${day}`);
-      if (isNaN(date.getTime())) {
-        return null;
-      }
+      // التحقق من صحة التاريخ
+      const dayNum = parseInt(day);
+      const monthNum = parseInt(month);
+      const yearNum = parseInt(year);
       
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      if (isNaN(dayNum) || isNaN(monthNum) || isNaN(yearNum)) return null;
+      
+      // التحقق من صحة اليوم والشهر
+      if (dayNum < 1 || dayNum > 31 || monthNum < 1 || monthNum > 12) return null;
+      
+      // تنسيق التاريخ مع إضافة صفر للأرقام المفردة
+      const formattedDay = dayNum < 10 ? `0${dayNum}` : dayNum;
+      const formattedMonth = monthNum < 10 ? `0${monthNum}` : monthNum;
+      
+      return `${yearNum}-${formattedMonth}-${formattedDay}`;
     }
     
     // إرسال النموذج
@@ -639,7 +651,7 @@
       }
       
       if (!licenseExpiry) {
-        alert('الرجاء إدخال تاريخ انتهاء الرخصة صحيح');
+        alert('الرجاء إدخال تاريخ انتهاء الرخصة صحيح (يوم/شهر/سنة)');
         return;
       }
       
