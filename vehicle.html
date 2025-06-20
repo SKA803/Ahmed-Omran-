@@ -25,15 +25,16 @@
     
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
     
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 15px;
+      font-family: 'Tajawal', Arial, sans-serif;
       background-color: var(--light-bg);
       color: var(--text-color);
       line-height: 1.6;
+      padding: 20px;
     }
     
     .container {
@@ -337,15 +338,15 @@
 </head>
 <body>
   <div class="container" id="vehicleContainer">
-    <!-- سيتم ملء هذه الصفحة بالبيانات من localStorage -->
+    <!-- المحتوى يُعبأ ديناميكيًا -->
   </div>
 
   <!-- معرض الصور -->
   <div id="galleryModal" class="gallery-modal">
-    <span class="close-gallery" onclick="closeGallery()">&times;</span>
+    <span class="close-gallery">&times;</span>
     <div class="gallery-navigation">
-      <div class="gallery-nav-btn" onclick="navigateGallery(-1)">❮</div>
-      <div class="gallery-nav-btn" onclick="navigateGallery(1)">❯</div>
+      <div class="gallery-nav-btn">❮</div>
+      <div class="gallery-nav-btn">❯</div>
     </div>
     <div class="gallery-content">
       <img id="galleryImage" src="" alt="صورة الرخصة">
@@ -353,12 +354,14 @@
   </div>
 
   <script>
-    // متغيرات عامة لتخزين بيانات المركبة
+    // متغيرات عامة
     let currentVehicle = null;
     let currentCompany = null;
     let vehicleImages = [];
+    let currentGalleryIndex = 0;
 
-    document.addEventListener('DOMContentLoaded', function() {
+    // دالة تحميل البيانات
+    const loadVehicleData = () => {
       const urlParams = new URLSearchParams(window.location.search);
       const vehicleId = urlParams.get('id');
       const companyId = urlParams.get('companyId');
@@ -383,13 +386,16 @@
         return;
       }
       
-      // تخزين الصور في متغير عام
+      renderVehicleData();
+    };
+
+    // دالة عرض البيانات
+    const renderVehicleData = () => {
       vehicleImages = currentVehicle.images || [];
       
-      // حساب حالة كل رخصة
       const now = new Date();
       const soonDate = new Date();
-      soonDate.setDate(now.getDate() + 30); // 30 يوم من الآن
+      soonDate.setDate(now.getDate() + 30);
       
       const licenseExpiry = new Date(currentVehicle.licenseExpiry);
       const calibrationExpiry = currentVehicle.calibrationExpiry ? new Date(currentVehicle.calibrationExpiry) : null;
@@ -397,9 +403,7 @@
       const licenseStatus = getLicenseStatus(licenseExpiry, now, soonDate);
       const calibrationStatus = calibrationExpiry ? getLicenseStatus(calibrationExpiry, now, soonDate) : null;
       
-      // عرض معلومات المركبة
-      const container = document.getElementById('vehicleContainer');
-      container.innerHTML = `
+      document.getElementById('vehicleContainer').innerHTML = `
         <div class="vehicle-header">
           <h1 class="vehicle-title">${currentVehicle.licenseNumber}</h1>
           <a href="company.html?id=${currentCompany.id}" class="back-btn">
@@ -469,12 +473,13 @@
       `;
       
       // إعداد الأحداث
-      document.getElementById('editBtn').addEventListener('click', function() {
-        window.location.href = `edit-vehicle.html?id=${currentVehicle.id}&companyId=${currentCompany.id}`;
+      document.getElementById('editBtn').addEventListener('click', () => {
+        window.location.href = `edit-vehicle.html?id=${currentVehicle.id}&companyId=${currentCompany.id}&t=${Date.now()}`;
       });
       
-      document.getElementById('deleteBtn').addEventListener('click', function() {
+      document.getElementById('deleteBtn').addEventListener('click', () => {
         if (confirm('هل أنت متأكد من حذف هذه المركبة؟')) {
+          const companies = JSON.parse(localStorage.getItem('companies')) || [];
           const companyIndex = companies.findIndex(c => c.id === currentCompany.id);
           const vehicleIndex = companies[companyIndex].vehicles.findIndex(v => v.id === currentVehicle.id);
           
@@ -485,47 +490,39 @@
           window.location.href = `company.html?id=${currentCompany.id}`;
         }
       });
-    });
-    
-    // معرض الصور
-    let currentImageIndex = 0;
-    const galleryModal = document.getElementById('galleryModal');
-    const galleryImage = document.getElementById('galleryImage');
-    
-    function openGallery(index) {
+    };
+
+    // دالة فتح المعرض
+    const openGallery = (index) => {
       if (vehicleImages.length === 0) return;
       
-      currentImageIndex = index;
-      galleryImage.src = vehicleImages[currentImageIndex].data;
-      galleryModal.style.display = 'flex';
+      currentGalleryIndex = index;
+      document.getElementById('galleryImage').src = vehicleImages[currentGalleryIndex].data;
+      document.getElementById('galleryModal').style.display = 'flex';
       document.body.style.overflow = 'hidden';
-    }
-    
-    function closeGallery() {
-      galleryModal.style.display = 'none';
+    };
+
+    // دالة إغلاق المعرض
+    const closeGallery = () => {
+      document.getElementById('galleryModal').style.display = 'none';
       document.body.style.overflow = 'auto';
-    }
-    
-    function navigateGallery(direction) {
-      currentImageIndex += direction;
+    };
+
+    // دالة التنقل في المعرض
+    const navigateGallery = (direction) => {
+      currentGalleryIndex += direction;
       
-      if (currentImageIndex < 0) {
-        currentImageIndex = vehicleImages.length - 1;
-      } else if (currentImageIndex >= vehicleImages.length) {
-        currentImageIndex = 0;
+      if (currentGalleryIndex < 0) {
+        currentGalleryIndex = vehicleImages.length - 1;
+      } else if (currentGalleryIndex >= vehicleImages.length) {
+        currentGalleryIndex = 0;
       }
       
-      galleryImage.src = vehicleImages[currentImageIndex].data;
-    }
-    
-    // إغلاق المعرض عند الضغط على ESC
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        closeGallery();
-      }
-    });
-    
-    function getLicenseStatus(expiryDate, now, soonDate) {
+      document.getElementById('galleryImage').src = vehicleImages[currentGalleryIndex].data;
+    };
+
+    // دالة تحديد حالة الرخصة
+    const getLicenseStatus = (expiryDate, now, soonDate) => {
       if (!expiryDate) return { text: 'غير مسجل', class: '' };
       
       if (expiryDate < now) {
@@ -535,13 +532,35 @@
       } else {
         return { text: 'نشطة', class: '' };
       }
-    }
-    
-    function formatDate(dateString) {
+    };
+
+    // دالة تنسيق التاريخ
+    const formatDate = (dateString) => {
       if (!dateString) return 'غير محدد';
-      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-      return new Date(dateString).toLocaleDateString('ar-EG', options);
-    }
+      const date = new Date(dateString);
+      return date.toLocaleDateString('ar-EG');
+    };
+
+    // أحداث الصفحة
+    document.addEventListener('DOMContentLoaded', loadVehicleData);
+    window.addEventListener('focus', loadVehicleData);
+    
+    // أحداث المعرض
+    document.querySelector('.close-gallery').addEventListener('click', closeGallery);
+    document.querySelectorAll('.gallery-nav-btn')[0].addEventListener('click', () => navigateGallery(-1));
+    document.querySelectorAll('.gallery-nav-btn')[1].addEventListener('click', () => navigateGallery(1));
+    
+    // إغلاق المعرض عند الضغط على ESC
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeGallery();
+      }
+    });
+
+    // جعل الدوال متاحة globally للاستدعاء من HTML
+    window.openGallery = openGallery;
+    window.closeGallery = closeGallery;
+    window.navigateGallery = navigateGallery;
   </script>
 </body>
 </html>
