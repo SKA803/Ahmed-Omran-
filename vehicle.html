@@ -96,6 +96,7 @@
       object-fit: cover;
       border-radius: 8px;
       box-shadow: var(--box-shadow);
+      cursor: pointer;
     }
     
     .vehicle-info {
@@ -352,6 +353,11 @@
   </div>
 
   <script>
+    // متغيرات عامة لتخزين بيانات المركبة
+    let currentVehicle = null;
+    let currentCompany = null;
+    let vehicleImages = [];
+
     document.addEventListener('DOMContentLoaded', function() {
       const urlParams = new URLSearchParams(window.location.search);
       const vehicleId = urlParams.get('id');
@@ -363,27 +369,30 @@
       }
       
       const companies = JSON.parse(localStorage.getItem('companies')) || [];
-      const company = companies.find(c => c.id === companyId);
+      currentCompany = companies.find(c => c.id === companyId);
       
-      if (!company) {
+      if (!currentCompany) {
         window.location.href = 'index.html';
         return;
       }
       
-      const vehicle = company.vehicles.find(v => v.id === vehicleId);
+      currentVehicle = currentCompany.vehicles.find(v => v.id === vehicleId);
       
-      if (!vehicle) {
+      if (!currentVehicle) {
         window.location.href = 'index.html';
         return;
       }
+      
+      // تخزين الصور في متغير عام
+      vehicleImages = currentVehicle.images || [];
       
       // حساب حالة كل رخصة
       const now = new Date();
       const soonDate = new Date();
       soonDate.setDate(now.getDate() + 30); // 30 يوم من الآن
       
-      const licenseExpiry = new Date(vehicle.licenseExpiry);
-      const calibrationExpiry = vehicle.calibrationExpiry ? new Date(vehicle.calibrationExpiry) : null;
+      const licenseExpiry = new Date(currentVehicle.licenseExpiry);
+      const calibrationExpiry = currentVehicle.calibrationExpiry ? new Date(currentVehicle.calibrationExpiry) : null;
       
       const licenseStatus = getLicenseStatus(licenseExpiry, now, soonDate);
       const calibrationStatus = calibrationExpiry ? getLicenseStatus(calibrationExpiry, now, soonDate) : null;
@@ -392,16 +401,16 @@
       const container = document.getElementById('vehicleContainer');
       container.innerHTML = `
         <div class="vehicle-header">
-          <h1 class="vehicle-title">${vehicle.licenseNumber}</h1>
-          <a href="company.html?id=${company.id}" class="back-btn">
+          <h1 class="vehicle-title">${currentVehicle.licenseNumber}</h1>
+          <a href="company.html?id=${currentCompany.id}" class="back-btn">
             <i class="fas fa-arrow-right"></i> العودة
           </a>
         </div>
         
         <div class="vehicle-details">
           <div>
-            ${vehicle.images && vehicle.images.length > 0 ? 
-              `<img src="${vehicle.images[0].data}" alt="صورة الرخصة" class="vehicle-image" onclick="openGallery(0)">` : 
+            ${vehicleImages.length > 0 ? 
+              `<img src="${vehicleImages[0].data}" alt="صورة الرخصة" class="vehicle-image" onclick="openGallery(0)">` : 
               `<div style="height:300px; background:#f5f5f5; display:flex; align-items:center; justify-content:center; border-radius:8px;">
                 <p>لا توجد صور متاحة</p>
               </div>`
@@ -411,7 +420,7 @@
           <div class="vehicle-info">
             <div class="info-row">
               <span class="info-label">رقم الرخصة:</span>
-              <span class="info-value">${vehicle.licenseNumber}</span>
+              <span class="info-value">${currentVehicle.licenseNumber}</span>
             </div>
             <div class="info-row">
               <span class="info-label">حالة الرخصة:</span>
@@ -419,16 +428,16 @@
             </div>
             <div class="info-row">
               <span class="info-label">تاريخ انتهاء الرخصة:</span>
-              <span class="info-value ${licenseStatus.class}">${formatDate(vehicle.licenseExpiry)}</span>
+              <span class="info-value ${licenseStatus.class}">${formatDate(currentVehicle.licenseExpiry)}</span>
             </div>
-            ${vehicle.calibrationExpiry ? `
+            ${currentVehicle.calibrationExpiry ? `
             <div class="info-row">
               <span class="info-label">حالة العيار:</span>
               <span class="info-value ${calibrationStatus.class}">${calibrationStatus.text}</span>
             </div>
             <div class="info-row">
               <span class="info-label">تاريخ انتهاء العيار:</span>
-              <span class="info-value ${calibrationStatus.class}">${formatDate(vehicle.calibrationExpiry)}</span>
+              <span class="info-value ${calibrationStatus.class}">${formatDate(currentVehicle.calibrationExpiry)}</span>
             </div>
             ` : ''}
           </div>
@@ -438,8 +447,8 @@
           <h2 class="section-title"><i class="fas fa-images"></i> صور الرخصة</h2>
           
           <div class="thumbnail-container">
-            ${vehicle.images && vehicle.images.length > 0 ? 
-              vehicle.images.map((img, index) => `
+            ${vehicleImages.length > 0 ? 
+              vehicleImages.map((img, index) => `
                 <div class="thumbnail" onclick="openGallery(${index})">
                   <img src="${img.data}" alt="صورة الرخصة ${index + 1}">
                 </div>
@@ -461,36 +470,32 @@
       
       // إعداد الأحداث
       document.getElementById('editBtn').addEventListener('click', function() {
-        window.location.href = `edit-vehicle.html?id=${vehicle.id}&companyId=${company.id}`;
+        window.location.href = `edit-vehicle.html?id=${currentVehicle.id}&companyId=${currentCompany.id}`;
       });
       
       document.getElementById('deleteBtn').addEventListener('click', function() {
         if (confirm('هل أنت متأكد من حذف هذه المركبة؟')) {
-          const companyIndex = companies.findIndex(c => c.id === company.id);
-          const vehicleIndex = companies[companyIndex].vehicles.findIndex(v => v.id === vehicle.id);
+          const companyIndex = companies.findIndex(c => c.id === currentCompany.id);
+          const vehicleIndex = companies[companyIndex].vehicles.findIndex(v => v.id === currentVehicle.id);
           
           companies[companyIndex].vehicles.splice(vehicleIndex, 1);
           localStorage.setItem('companies', JSON.stringify(companies));
           
           alert('تم حذف المركبة بنجاح');
-          window.location.href = `company.html?id=${company.id}`;
+          window.location.href = `company.html?id=${currentCompany.id}`;
         }
       });
     });
     
     // معرض الصور
     let currentImageIndex = 0;
-    let vehicleImages = [];
     const galleryModal = document.getElementById('galleryModal');
     const galleryImage = document.getElementById('galleryImage');
     
     function openGallery(index) {
-      const vehicleContainer = document.getElementById('vehicleContainer');
-      const images = JSON.parse(vehicleContainer.dataset.images || '[]');
-      if (images.length === 0) return;
+      if (vehicleImages.length === 0) return;
       
       currentImageIndex = index;
-      vehicleImages = images;
       galleryImage.src = vehicleImages[currentImageIndex].data;
       galleryModal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
