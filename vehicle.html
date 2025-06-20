@@ -145,44 +145,32 @@
       border-bottom: 2px solid var(--primary-color);
     }
     
-    .license-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
+    .thumbnail-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
     }
     
-    .license-card {
-      background: var(--white);
-      border: 1px solid var(--border-color);
+    .thumbnail {
+      width: 120px;
+      height: 120px;
+      cursor: pointer;
+      transition: transform 0.3s;
+      position: relative;
       border-radius: 8px;
-      padding: 20px;
-      box-shadow: var(--box-shadow);
-      transition: var(--transition);
+      overflow: hidden;
     }
     
-    .license-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    .thumbnail:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
     
-    .license-title {
-      font-size: 1.2em;
-      font-weight: bold;
-      color: var(--primary-color);
-      margin-top: 0;
-      margin-bottom: 15px;
-    }
-    
-    .license-details {
-      margin-bottom: 15px;
-    }
-    
-    .license-number {
-      font-weight: bold;
-    }
-    
-    .license-expiry {
-      margin-top: 10px;
+    .thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     
     .action-buttons {
@@ -225,6 +213,81 @@
       background-color: var(--danger-hover);
     }
     
+    /* معرض الصور */
+    .gallery-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .gallery-content {
+      max-width: 90%;
+      max-height: 90%;
+      text-align: center;
+    }
+    
+    .gallery-content img {
+      max-width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+    
+    .close-gallery {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+      z-index: 1001;
+    }
+    
+    .gallery-navigation {
+      position: absolute;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-sizing: border-box;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1001;
+    }
+    
+    .gallery-nav-btn {
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+      background: rgba(0,0,0,0.5);
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .gallery-nav-btn:hover {
+      background: rgba(0,0,0,0.7);
+    }
+    
+    .no-images {
+      color: #666;
+      text-align: center;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      width: 100%;
+    }
+    
     @media (max-width: 768px) {
       .container {
         padding: 15px;
@@ -238,8 +301,9 @@
         height: 200px;
       }
       
-      .license-cards {
-        grid-template-columns: 1fr;
+      .thumbnail {
+        width: 100px;
+        height: 100px;
       }
     }
     
@@ -262,12 +326,29 @@
         width: 100%;
         justify-content: center;
       }
+      
+      .thumbnail {
+        width: 80px;
+        height: 80px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container" id="vehicleContainer">
     <!-- سيتم ملء هذه الصفحة بالبيانات من localStorage -->
+  </div>
+
+  <!-- معرض الصور -->
+  <div id="galleryModal" class="gallery-modal">
+    <span class="close-gallery" onclick="closeGallery()">&times;</span>
+    <div class="gallery-navigation">
+      <div class="gallery-nav-btn" onclick="navigateGallery(-1)">❮</div>
+      <div class="gallery-nav-btn" onclick="navigateGallery(1)">❯</div>
+    </div>
+    <div class="gallery-content">
+      <img id="galleryImage" src="" alt="صورة الرخصة">
+    </div>
   </div>
 
   <script>
@@ -320,7 +401,7 @@
         <div class="vehicle-details">
           <div>
             ${vehicle.images && vehicle.images.length > 0 ? 
-              `<img src="${vehicle.images[0].data}" alt="صورة الرخصة" class="vehicle-image">` : 
+              `<img src="${vehicle.images[0].data}" alt="صورة الرخصة" class="vehicle-image" onclick="openGallery(0)">` : 
               `<div style="height:300px; background:#f5f5f5; display:flex; align-items:center; justify-content:center; border-radius:8px;">
                 <p>لا توجد صور متاحة</p>
               </div>`
@@ -356,14 +437,14 @@
         <div class="licenses-section">
           <h2 class="section-title"><i class="fas fa-images"></i> صور الرخصة</h2>
           
-          <div class="license-cards">
+          <div class="thumbnail-container">
             ${vehicle.images && vehicle.images.length > 0 ? 
-              vehicle.images.map(img => `
-                <div class="license-card">
-                  <img src="${img.data}" alt="صورة الرخصة" style="width:100%; height:200px; object-fit:cover; border-radius:8px;">
+              vehicle.images.map((img, index) => `
+                <div class="thumbnail" onclick="openGallery(${index})">
+                  <img src="${img.data}" alt="صورة الرخصة ${index + 1}">
                 </div>
               `).join('') : 
-              '<p>لا توجد صور مرفوعة</p>'
+              '<div class="no-images">لا توجد صور مرفوعة</div>'
             }
           </div>
         </div>
@@ -395,6 +476,48 @@
           window.location.href = `company.html?id=${company.id}`;
         }
       });
+    });
+    
+    // معرض الصور
+    let currentImageIndex = 0;
+    let vehicleImages = [];
+    const galleryModal = document.getElementById('galleryModal');
+    const galleryImage = document.getElementById('galleryImage');
+    
+    function openGallery(index) {
+      const vehicleContainer = document.getElementById('vehicleContainer');
+      const images = JSON.parse(vehicleContainer.dataset.images || '[]');
+      if (images.length === 0) return;
+      
+      currentImageIndex = index;
+      vehicleImages = images;
+      galleryImage.src = vehicleImages[currentImageIndex].data;
+      galleryModal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+    
+    function closeGallery() {
+      galleryModal.style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+    
+    function navigateGallery(direction) {
+      currentImageIndex += direction;
+      
+      if (currentImageIndex < 0) {
+        currentImageIndex = vehicleImages.length - 1;
+      } else if (currentImageIndex >= vehicleImages.length) {
+        currentImageIndex = 0;
+      }
+      
+      galleryImage.src = vehicleImages[currentImageIndex].data;
+    }
+    
+    // إغلاق المعرض عند الضغط على ESC
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeGallery();
+      }
     });
     
     function getLicenseStatus(expiryDate, now, soonDate) {
