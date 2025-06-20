@@ -538,7 +538,8 @@
     const formatDate = (dateString) => {
       if (!dateString) return 'غير محدد';
       const date = new Date(dateString);
-      return date.toLocaleDateString('ar-EG');
+      const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      return date.toLocaleDateString('ar-EG', options);
     };
 
     // أحداث الصفحة
