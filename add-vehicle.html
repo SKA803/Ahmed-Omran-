@@ -82,16 +82,6 @@
       box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
     }
     
-    .manual-date-input {
-      display: flex;
-      gap: 10px;
-    }
-    
-    .manual-date-input input {
-      flex: 1;
-      text-align: center;
-    }
-    
     .date-format-hint {
       font-size: 0.8rem;
       color: #666;
@@ -328,10 +318,6 @@
         height: 70px;
       }
       
-      .manual-date-input {
-        flex-direction: column;
-      }
-      
       .image-nav {
         font-size: 20px;
         width: 40px;
@@ -356,21 +342,13 @@
       
       <div class="form-group">
         <label for="licenseExpiry">تاريخ انتهاء الرخصة</label>
-        <div class="manual-date-input">
-          <input type="text" id="licenseExpiryDay" placeholder="يوم" maxlength="2" pattern="\d*" required>
-          <input type="text" id="licenseExpiryMonth" placeholder="شهر" maxlength="2" pattern="\d*" required>
-          <input type="text" id="licenseExpiryYear" placeholder="سنة" maxlength="4" pattern="\d*" required>
-        </div>
+        <input type="text" id="licenseExpiry" required placeholder="أدخل تاريخ انتهاء الرخصة (يوم/شهر/سنة)">
         <div class="date-format-hint">صيغة التاريخ: يوم/شهر/سنة (مثال: 25/12/2023)</div>
       </div>
       
       <div class="form-group">
         <label for="calibrationExpiry">تاريخ انتهاء العيار</label>
-        <div class="manual-date-input">
-          <input type="text" id="calibrationExpiryDay" placeholder="يوم" maxlength="2" pattern="\d*">
-          <input type="text" id="calibrationExpiryMonth" placeholder="شهر" maxlength="2" pattern="\d*">
-          <input type="text" id="calibrationExpiryYear" placeholder="سنة" maxlength="4" pattern="\d*">
-        </div>
+        <input type="text" id="calibrationExpiry" placeholder="أدخل تاريخ انتهاء العيار (يوم/شهر/سنة)">
         <div class="date-format-hint">صيغة التاريخ: يوم/شهر/سنة (مثال: 25/12/2023)</div>
       </div>
       
@@ -621,19 +599,22 @@
     });
     
     // تحويل التاريخ المدخل إلى صيغة YYYY-MM-DD
-    function getFormattedDate(dayId, monthId, yearId) {
-      const day = document.getElementById(dayId).value.padStart(2, '0');
-      const month = document.getElementById(monthId).value.padStart(2, '0');
-      const year = document.getElementById(yearId).value;
+    function parseDateInput(dateStr) {
+      if (!dateStr) return null;
       
-      if (day && month && year) {
-        const date = new Date(`${year}-${month}-${day}`);
-        if (isNaN(date.getTime())) {
-          return null;
-        }
-        return `${year}-${month}-${day}`;
+      const parts = dateStr.split('/');
+      if (parts.length !== 3) return null;
+      
+      const [day, month, year] = parts.map(part => part.trim());
+      
+      if (!day || !month || !year) return null;
+      
+      const date = new Date(`${year}-${month}-${day}`);
+      if (isNaN(date.getTime())) {
+        return null;
       }
-      return null;
+      
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     }
     
     // إرسال النموذج
@@ -649,8 +630,8 @@
       }
       
       const licenseNumber = document.getElementById('licenseNumber').value;
-      const licenseExpiry = getFormattedDate('licenseExpiryDay', 'licenseExpiryMonth', 'licenseExpiryYear');
-      const calibrationExpiry = getFormattedDate('calibrationExpiryDay', 'calibrationExpiryMonth', 'calibrationExpiryYear');
+      const licenseExpiry = parseDateInput(document.getElementById('licenseExpiry').value);
+      const calibrationExpiry = parseDateInput(document.getElementById('calibrationExpiry').value);
       
       if (!licenseNumber || !licenseExpiry) {
         alert('الرجاء إدخال البيانات المطلوبة');
@@ -687,20 +668,13 @@
       window.location.href = `company.html?id=${companyId}`;
     });
     
-    // إدخال أرقام فقط في حقول التاريخ
-    document.querySelectorAll('input[type="text"][pattern="\\d*"]').forEach(input => {
-      input.addEventListener('input', function() {
-        this.value = this.value.replace(/[^0-9]/g, '');
-      });
+    // إدخال أرقام فقط في حقول التاريخ مع السماح بشرطة مائلة
+    document.getElementById('licenseExpiry').addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9\/]/g, '');
     });
     
-    // التنقل التلقائي بين حقول التاريخ
-    document.querySelectorAll('.manual-date-input input').forEach((input, index, inputs) => {
-      input.addEventListener('input', function() {
-        if (this.value.length >= this.maxLength && index < inputs.length - 1) {
-          inputs[index + 1].focus();
-        }
-      });
+    document.getElementById('calibrationExpiry').addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9\/]/g, '');
     });
   </script>
   
