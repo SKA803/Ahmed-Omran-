@@ -160,12 +160,6 @@
       color: #aaa;
     }
     
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-    
     .footer {
       text-align: center;
       margin-top: 40px;
@@ -181,6 +175,47 @@
       font-weight: 500;
     }
     
+    /* تعديلات جديدة لتحميل الصور */
+    .image-upload {
+      margin-top: 20px;
+    }
+    
+    .image-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .image-preview-item {
+      position: relative;
+      width: 100px;
+      height: 100px;
+    }
+    
+    .image-preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    
+    .image-preview-item .remove-btn {
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      background: var(--danger-color);
+      color: white;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    
     @media (max-width: 768px) {
       .container {
         margin: 10px;
@@ -189,10 +224,6 @@
       
       h1 {
         font-size: 1.7rem;
-      }
-      
-      .form-row {
-        grid-template-columns: 1fr;
       }
     }
     
@@ -222,71 +253,30 @@
     
     <form id="vehicleForm">
       <div class="form-group">
-        <label for="vehicleNumber">رقم المركبة</label>
-        <i class="fas fa-car input-icon"></i>
-        <input type="text" id="vehicleNumber" required placeholder="أدخل رقم المركبة">
-      </div>
-      
-      <div class="form-row">
-        <div class="form-group">
-          <label for="date">التاريخ</label>
-          <i class="fas fa-calendar input-icon"></i>
-          <input type="date" id="date" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="day">اليوم</label>
-          <i class="fas fa-calendar-day input-icon"></i>
-          <input type="text" id="day" readonly>
-        </div>
+        <label for="licenseNumber">رقم الرخصة</label>
+        <i class="fas fa-id-card input-icon"></i>
+        <input type="text" id="licenseNumber" required placeholder="أدخل رقم الرخصة">
       </div>
       
       <div class="form-group">
-        <label for="licenseExpiry">تاريخ انتهاء رخصة المركبة</label>
-        <i class="fas fa-id-card input-icon"></i>
+        <label for="licenseExpiry">تاريخ انتهاء الرخصة</label>
+        <i class="fas fa-calendar input-icon"></i>
         <input type="date" id="licenseExpiry" required>
       </div>
       
       <div class="form-group">
-        <label for="calibrationCertificate">شهادة العيار</label>
-        <i class="fas fa-file-certificate input-icon"></i>
-        <input type="text" id="calibrationCertificate" placeholder="أدخل رقم شهادة العيار">
-      </div>
-      
-      <div class="form-group">
-        <label for="calibrationExpiry">انتهاء شهادة العيار</label>
-        <i class="fas fa-calendar-times input-icon"></i>
+        <label for="calibrationExpiry">تاريخ انتهاء العيار</label>
+        <i class="fas fa-calendar input-icon"></i>
         <input type="date" id="calibrationExpiry">
       </div>
       
-      <div class="form-group">
-        <label for="driverLicense">رخصة السائق</label>
-        <i class="fas fa-id-card input-icon"></i>
-        <input type="text" id="driverLicense" placeholder="أدخل رقم رخصة السائق">
-      </div>
-      
-      <div class="form-group">
-        <label for="driverLicenseExpiry">انتهاء رخصة السائق</label>
-        <i class="fas fa-calendar-times input-icon"></i>
-        <input type="date" id="driverLicenseExpiry">
-      </div>
-      
-      <div class="form-group">
-        <label for="safeDriving">شهادة القيادة الآمنة</label>
-        <i class="fas fa-certificate input-icon"></i>
-        <input type="text" id="safeDriving" placeholder="أدخل رقم شهادة القيادة الآمنة">
-      </div>
-      
-      <div class="form-group">
-        <label for="safeDrivingExpiry">انتهاء شهادة القيادة الآمنة</label>
-        <i class="fas fa-calendar-times input-icon"></i>
-        <input type="date" id="safeDrivingExpiry">
-      </div>
-      
-      <div class="form-group">
-        <label for="vehicleImage">صورة المركبة (رابط)</label>
-        <i class="fas fa-image input-icon"></i>
-        <input type="text" id="vehicleImage" placeholder="أدخل رابط صورة المركبة">
+      <div class="form-group image-upload">
+        <label>تحميل صور الرخصة (يمكن تحميل أكثر من صورة)</label>
+        <input type="file" id="imageUpload" multiple accept="image/*" style="display: none;">
+        <button type="button" id="uploadBtn" style="width: auto; padding: 10px 15px; margin-top: 0;">
+          <i class="fas fa-upload"></i> اختر الصور
+        </button>
+        <div class="image-preview" id="imagePreview"></div>
       </div>
       
       <button type="submit" id="saveBtn">
@@ -305,6 +295,60 @@
   <script>
     // إضافة السنة الحالية
     document.getElementById('year').textContent = new Date().getFullYear();
+    
+    // إدارة تحميل الصور
+    const uploadBtn = document.getElementById('uploadBtn');
+    const imageUpload = document.getElementById('imageUpload');
+    const imagePreview = document.getElementById('imagePreview');
+    let images = [];
+    
+    uploadBtn.addEventListener('click', () => imageUpload.click());
+    
+    imageUpload.addEventListener('change', function() {
+      const files = this.files;
+      
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        if (!file.type.match('image.*')) continue;
+        
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+          const imageData = {
+            name: file.name,
+            data: e.target.result
+          };
+          
+          images.push(imageData);
+          renderImagePreview();
+        }
+        
+        reader.readAsDataURL(file);
+      }
+    });
+    
+    function renderImagePreview() {
+      imagePreview.innerHTML = '';
+      
+      images.forEach((image, index) => {
+        const previewItem = document.createElement('div');
+        previewItem.className = 'image-preview-item';
+        previewItem.innerHTML = `
+          <span class="remove-btn" data-index="${index}">&times;</span>
+          <img src="${image.data}" alt="صورة الرخصة">
+        `;
+        imagePreview.appendChild(previewItem);
+      });
+      
+      // إضافة أحداث لحذف الصور
+      document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const index = parseInt(this.getAttribute('data-index'));
+          images.splice(index, 1);
+          renderImagePreview();
+        });
+      });
+    }
     
     // تحميل بيانات المركبة
     document.addEventListener('DOMContentLoaded', function() {
@@ -333,24 +377,15 @@
       }
       
       // تعبئة النموذج ببيانات المركبة
-      document.getElementById('vehicleNumber').value = vehicle.vehicleNumber;
-      document.getElementById('date').value = vehicle.date;
-      document.getElementById('day').value = vehicle.day;
+      document.getElementById('licenseNumber').value = vehicle.licenseNumber;
       document.getElementById('licenseExpiry').value = vehicle.licenseExpiry;
-      document.getElementById('calibrationCertificate').value = vehicle.calibrationCertificate || '';
       document.getElementById('calibrationExpiry').value = vehicle.calibrationExpiry || '';
-      document.getElementById('driverLicense').value = vehicle.driverLicense || '';
-      document.getElementById('driverLicenseExpiry').value = vehicle.driverLicenseExpiry || '';
-      document.getElementById('safeDriving').value = vehicle.safeDriving || '';
-      document.getElementById('safeDrivingExpiry').value = vehicle.safeDrivingExpiry || '';
-      document.getElementById('vehicleImage').value = vehicle.image || '';
-    });
-    
-    // حساب اليوم عند تغيير التاريخ
-    document.getElementById('date').addEventListener('change', function() {
-      const date = new Date(this.value);
-      const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-      document.getElementById('day').value = days[date.getDay()];
+      
+      // تحميل الصور الحالية
+      if (vehicle.images && vehicle.images.length > 0) {
+        images = [...vehicle.images];
+        renderImagePreview();
+      }
     });
     
     // إدارة النموذج
@@ -366,19 +401,11 @@
         return;
       }
       
-      const vehicleNumber = document.getElementById('vehicleNumber').value;
-      const date = document.getElementById('date').value;
-      const day = document.getElementById('day').value;
+      const licenseNumber = document.getElementById('licenseNumber').value;
       const licenseExpiry = document.getElementById('licenseExpiry').value;
-      const calibrationCertificate = document.getElementById('calibrationCertificate').value;
       const calibrationExpiry = document.getElementById('calibrationExpiry').value;
-      const driverLicense = document.getElementById('driverLicense').value;
-      const driverLicenseExpiry = document.getElementById('driverLicenseExpiry').value;
-      const safeDriving = document.getElementById('safeDriving').value;
-      const safeDrivingExpiry = document.getElementById('safeDrivingExpiry').value;
-      const vehicleImage = document.getElementById('vehicleImage').value;
       
-      if (!vehicleNumber || !date || !licenseExpiry) {
+      if (!licenseNumber || !licenseExpiry) {
         alert('الرجاء إدخال البيانات المطلوبة');
         return;
       }
@@ -401,17 +428,10 @@
       // تحديث بيانات المركبة
       companies[companyIndex].vehicles[vehicleIndex] = {
         ...companies[companyIndex].vehicles[vehicleIndex],
-        vehicleNumber,
-        date,
-        day,
+        licenseNumber,
         licenseExpiry,
-        calibrationCertificate,
-        calibrationExpiry,
-        driverLicense,
-        driverLicenseExpiry,
-        safeDriving,
-        safeDrivingExpiry,
-        image: vehicleImage || 'https://via.placeholder.com/300x200?text=Vehicle'
+        calibrationExpiry: calibrationExpiry || null,
+        images: [...images]
       };
       
       localStorage.setItem('companies', JSON.stringify(companies));
