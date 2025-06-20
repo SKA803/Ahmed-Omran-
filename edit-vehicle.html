@@ -13,8 +13,9 @@
       --light-color: #f8f9fa;
       --dark-color: #212529;
       --danger-color: #f72585;
-      --border-radius: 12px;
-      --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      --success-color: #4cc9f0;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       --transition: all 0.3s ease;
     }
     
@@ -25,54 +26,29 @@
     }
     
     body {
-      font-family: 'Tajawal', Arial, sans-serif;
-      margin: 0;
-      padding: 0;
+      font-family: 'Tajawal', sans-serif;
       background-color: #f5f7ff;
       color: var(--dark-color);
       line-height: 1.6;
+      padding: 20px;
     }
     
     .container {
       max-width: 800px;
-      margin: 20px auto;
+      margin: 0 auto;
       background: white;
       padding: 30px;
       border-radius: var(--border-radius);
       box-shadow: var(--box-shadow);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .container::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 100%;
-      height: 8px;
-      background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
     }
     
     h1 {
       color: var(--primary-color);
       text-align: center;
-      margin-bottom: 30px;
-      font-size: 2rem;
-      position: relative;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
       padding-bottom: 15px;
-    }
-    
-    h1::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      right: 50%;
-      transform: translateX(50%);
-      width: 80px;
-      height: 4px;
-      background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
-      border-radius: 2px;
+      border-bottom: 2px solid var(--accent-color);
     }
     
     h1 i {
@@ -81,7 +57,6 @@
     
     .form-group {
       margin-bottom: 20px;
-      position: relative;
     }
     
     label {
@@ -94,12 +69,11 @@
     input, select {
       width: 100%;
       padding: 12px 15px;
-      border: 1px solid rgba(0, 0, 0, 0.1);
+      border: 1px solid #ddd;
       border-radius: var(--border-radius);
-      font-family: 'Tajawal', Arial, sans-serif;
+      font-family: 'Tajawal', sans-serif;
       font-size: 1rem;
       transition: var(--transition);
-      background-color: var(--light-color);
     }
     
     input:focus, select:focus {
@@ -108,25 +82,40 @@
       box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
     }
     
+    .manual-date-input {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .manual-date-input input {
+      flex: 1;
+      text-align: center;
+    }
+    
+    .date-format-hint {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 5px;
+    }
+    
     button {
-      width: 100%;
-      padding: 15px;
-      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      background: var(--primary-color);
       color: white;
       border: none;
+      padding: 12px 20px;
       border-radius: var(--border-radius);
-      font-size: 1.1rem;
+      font-size: 1rem;
       cursor: pointer;
-      margin-top: 25px;
-      font-weight: bold;
       transition: var(--transition);
-      box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-top: 20px;
     }
     
     button:hover {
-      background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(67, 97, 238, 0.4);
+      background: var(--secondary-color);
     }
     
     button i {
@@ -136,13 +125,13 @@
     .back-btn {
       display: block;
       text-align: center;
-      margin-top: 20px;
+      margin-top: 15px;
       color: var(--primary-color);
       text-decoration: none;
       font-weight: 600;
-      transition: var(--transition);
       padding: 10px;
       border-radius: var(--border-radius);
+      transition: var(--transition);
     }
     
     .back-btn:hover {
@@ -153,57 +142,64 @@
       margin-right: 5px;
     }
     
-    .input-icon {
-      position: absolute;
-      left: 15px;
-      top: 40px;
-      color: #aaa;
-    }
-    
-    .footer {
-      text-align: center;
-      margin-top: 40px;
-      padding-top: 20px;
-      border-top: 1px solid rgba(0, 0, 0, 0.1);
-      color: #666;
-      font-size: 0.9rem;
-    }
-    
-    .footer a {
-      color: var(--primary-color);
-      text-decoration: none;
-      font-weight: 500;
-    }
-    
-    /* تعديلات جديدة لتحميل الصور */
+    /* تحميل الصور */
     .image-upload {
-      margin-top: 20px;
+      margin-top: 25px;
     }
     
-    .image-preview {
+    .upload-btn {
+      background: #f8f9fa;
+      border: 2px dashed #ccc;
+      padding: 20px;
+      text-align: center;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: var(--transition);
+      margin-bottom: 15px;
+    }
+    
+    .upload-btn:hover {
+      border-color: var(--accent-color);
+      background: rgba(72, 149, 239, 0.05);
+    }
+    
+    .upload-btn i {
+      font-size: 2rem;
+      color: var(--accent-color);
+      margin-bottom: 10px;
+      display: block;
+    }
+    
+    .file-input {
+      display: none;
+    }
+    
+    .thumbnails-container {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       margin-top: 15px;
     }
     
-    .image-preview-item {
+    .thumbnail {
       position: relative;
       width: 100px;
       height: 100px;
+      border-radius: 5px;
+      overflow: hidden;
+      border: 1px solid #eee;
     }
     
-    .image-preview-item img {
+    .thumbnail img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: 8px;
     }
     
-    .image-preview-item .remove-btn {
+    .delete-btn {
       position: absolute;
-      top: -5px;
-      left: -5px;
+      top: 5px;
+      left: 5px;
       background: var(--danger-color);
       color: white;
       width: 20px;
@@ -216,33 +212,27 @@
       font-size: 12px;
     }
     
+    .no-images {
+      color: #666;
+      text-align: center;
+      padding: 15px;
+      background: #f9f9f9;
+      border-radius: var(--border-radius);
+      width: 100%;
+    }
+    
     @media (max-width: 768px) {
       .container {
-        margin: 10px;
         padding: 20px;
       }
       
-      h1 {
-        font-size: 1.7rem;
-      }
-    }
-    
-    @media (max-width: 480px) {
-      .container {
-        padding: 15px;
+      .thumbnail {
+        width: 80px;
+        height: 80px;
       }
       
-      h1 {
-        font-size: 1.5rem;
-      }
-      
-      input, select {
-        padding: 10px 12px;
-      }
-      
-      button {
-        padding: 12px;
-        font-size: 1rem;
+      .manual-date-input {
+        flex-direction: column;
       }
     }
   </style>
@@ -251,61 +241,147 @@
   <div class="container">
     <h1><i class="fas fa-car"></i> تعديل بيانات المركبة</h1>
     
-    <form id="vehicleForm">
+    <form id="editForm">
       <div class="form-group">
         <label for="licenseNumber">رقم الرخصة</label>
-        <i class="fas fa-id-card input-icon"></i>
         <input type="text" id="licenseNumber" required placeholder="أدخل رقم الرخصة">
       </div>
       
       <div class="form-group">
         <label for="licenseExpiry">تاريخ انتهاء الرخصة</label>
-        <i class="fas fa-calendar input-icon"></i>
-        <input type="date" id="licenseExpiry" required>
+        <div class="manual-date-input">
+          <input type="text" id="licenseExpiryDay" placeholder="يوم" maxlength="2" pattern="\d*" required>
+          <input type="text" id="licenseExpiryMonth" placeholder="شهر" maxlength="2" pattern="\d*" required>
+          <input type="text" id="licenseExpiryYear" placeholder="سنة" maxlength="4" pattern="\d*" required>
+        </div>
+        <div class="date-format-hint">صيغة التاريخ: يوم/شهر/سنة (مثال: 25/12/2023)</div>
       </div>
       
       <div class="form-group">
         <label for="calibrationExpiry">تاريخ انتهاء العيار</label>
-        <i class="fas fa-calendar input-icon"></i>
-        <input type="date" id="calibrationExpiry">
+        <div class="manual-date-input">
+          <input type="text" id="calibrationExpiryDay" placeholder="يوم" maxlength="2" pattern="\d*">
+          <input type="text" id="calibrationExpiryMonth" placeholder="شهر" maxlength="2" pattern="\d*">
+          <input type="text" id="calibrationExpiryYear" placeholder="سنة" maxlength="4" pattern="\d*">
+        </div>
+        <div class="date-format-hint">صيغة التاريخ: يوم/شهر/سنة (مثال: 25/12/2023)</div>
       </div>
       
       <div class="form-group image-upload">
-        <label>تحميل صور الرخصة (يمكن تحميل أكثر من صورة)</label>
-        <input type="file" id="imageUpload" multiple accept="image/*" style="display: none;">
-        <button type="button" id="uploadBtn" style="width: auto; padding: 10px 15px; margin-top: 0;">
-          <i class="fas fa-upload"></i> اختر الصور
-        </button>
-        <div class="image-preview" id="imagePreview"></div>
+        <label>صور الرخصة</label>
+        <div class="upload-btn" id="uploadBtn">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p>انقر لرفع الصور أو اسحبها هنا</p>
+          <small>يمكنك رفع أكثر من صورة (JPEG, PNG)</small>
+        </div>
+        <input type="file" id="fileInput" class="file-input" multiple accept="image/*">
+        
+        <div class="thumbnails-container" id="thumbnailsContainer">
+          <div class="no-images">لا توجد صور مرفوعة بعد</div>
+        </div>
       </div>
       
-      <button type="submit" id="saveBtn">
+      <button type="submit">
         <i class="fas fa-save"></i> حفظ التعديلات
       </button>
+      
       <a href="#" id="backBtn" class="back-btn">
-        <i class="fas fa-arrow-right"></i> العودة
+        <i class="fas fa-arrow-right"></i> العودة بدون حفظ
       </a>
     </form>
-    
-    <div class="footer">
-      <p>جميع الحقوق محفوظة &copy; <span id="year"></span> | تم تطوير هذا الموقع بواسطة المطور <a href="#">عبد الله ندا</a></p>
-    </div>
   </div>
 
   <script>
-    // إضافة السنة الحالية
-    document.getElementById('year').textContent = new Date().getFullYear();
+    // متغيرات عامة
+    let currentVehicle = null;
+    let currentCompany = null;
+    let uploadedImages = [];
     
-    // إدارة تحميل الصور
-    const uploadBtn = document.getElementById('uploadBtn');
-    const imageUpload = document.getElementById('imageUpload');
-    const imagePreview = document.getElementById('imagePreview');
-    let images = [];
+    // تحميل البيانات عند بدء الصفحة
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const vehicleId = urlParams.get('id');
+      const companyId = urlParams.get('companyId');
+      
+      if (!vehicleId || !companyId) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      const companies = JSON.parse(localStorage.getItem('companies')) || [];
+      currentCompany = companies.find(c => c.id === companyId);
+      
+      if (!currentCompany) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      currentVehicle = currentCompany.vehicles.find(v => v.id === vehicleId);
+      
+      if (!currentVehicle) {
+        window.location.href = 'index.html';
+        return;
+      }
+      
+      // تعبئة النموذج بالبيانات الحالية
+      document.getElementById('licenseNumber').value = currentVehicle.licenseNumber;
+      
+      // تعبئة تاريخ الرخصة
+      if (currentVehicle.licenseExpiry) {
+        const licenseDate = new Date(currentVehicle.licenseExpiry);
+        document.getElementById('licenseExpiryDay').value = licenseDate.getDate();
+        document.getElementById('licenseExpiryMonth').value = licenseDate.getMonth() + 1;
+        document.getElementById('licenseExpiryYear').value = licenseDate.getFullYear();
+      }
+      
+      // تعبئة تاريخ العيار
+      if (currentVehicle.calibrationExpiry) {
+        const calibrationDate = new Date(currentVehicle.calibrationExpiry);
+        document.getElementById('calibrationExpiryDay').value = calibrationDate.getDate();
+        document.getElementById('calibrationExpiryMonth').value = calibrationDate.getMonth() + 1;
+        document.getElementById('calibrationExpiryYear').value = calibrationDate.getFullYear();
+      }
+      
+      // تحميل الصور الحالية
+      if (currentVehicle.images && currentVehicle.images.length > 0) {
+        uploadedImages = [...currentVehicle.images];
+        renderThumbnails();
+      }
+      
+      // إعداد أحداث رفع الصور
+      document.getElementById('uploadBtn').addEventListener('click', () => {
+        document.getElementById('fileInput').click();
+      });
+      
+      document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+      
+      // أحداث حقول التاريخ (للسماح بأرقام فقط)
+      document.querySelectorAll('input[type="text"][pattern="\\d*"]').forEach(input => {
+        input.addEventListener('input', function() {
+          this.value = this.value.replace(/[^0-9]/g, '');
+        });
+      });
+      
+      // التنقل التلقائي بين حقول التاريخ
+      document.querySelectorAll('.manual-date-input input').forEach((input, index, inputs) => {
+        input.addEventListener('input', function() {
+          if (this.value.length >= this.maxLength && index < inputs.length - 1) {
+            inputs[index + 1].focus();
+          }
+        });
+      });
+      
+      // حدث العودة
+      document.getElementById('backBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = `vehicle.html?id=${vehicleId}&companyId=${companyId}`;
+      });
+    });
     
-    uploadBtn.addEventListener('click', () => imageUpload.click());
-    
-    imageUpload.addEventListener('change', function() {
-      const files = this.files;
+    // معالجة رفع الملفات
+    function handleFileUpload(e) {
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
       
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
@@ -314,116 +390,87 @@
         const reader = new FileReader();
         
         reader.onload = function(e) {
-          const imageData = {
+          uploadedImages.push({
             name: file.name,
             data: e.target.result
-          };
+          });
           
-          images.push(imageData);
-          renderImagePreview();
-        }
+          renderThumbnails();
+        };
         
         reader.readAsDataURL(file);
       }
-    });
+    }
     
-    function renderImagePreview() {
-      imagePreview.innerHTML = '';
+    // عرض الصور المصغرة
+    function renderThumbnails() {
+      const container = document.getElementById('thumbnailsContainer');
+      container.innerHTML = '';
       
-      images.forEach((image, index) => {
-        const previewItem = document.createElement('div');
-        previewItem.className = 'image-preview-item';
-        previewItem.innerHTML = `
-          <span class="remove-btn" data-index="${index}">&times;</span>
+      if (uploadedImages.length === 0) {
+        container.innerHTML = '<div class="no-images">لا توجد صور مرفوعة بعد</div>';
+        return;
+      }
+      
+      uploadedImages.forEach((image, index) => {
+        const thumbnail = document.createElement('div');
+        thumbnail.className = 'thumbnail';
+        thumbnail.innerHTML = `
           <img src="${image.data}" alt="صورة الرخصة">
+          <div class="delete-btn" data-index="${index}">×</div>
         `;
-        imagePreview.appendChild(previewItem);
-      });
-      
-      // إضافة أحداث لحذف الصور
-      document.querySelectorAll('.remove-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-          const index = parseInt(this.getAttribute('data-index'));
-          images.splice(index, 1);
-          renderImagePreview();
+        container.appendChild(thumbnail);
+        
+        // حدث حذف الصورة
+        thumbnail.querySelector('.delete-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          uploadedImages.splice(index, 1);
+          renderThumbnails();
         });
       });
     }
     
-    // تحميل بيانات المركبة
-    document.addEventListener('DOMContentLoaded', function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const vehicleId = urlParams.get('id');
-      const companyId = urlParams.get('companyId');
+    // دالة تحويل التاريخ المدخل إلى صيغة YYYY-MM-DD
+    function getFormattedDate(dayId, monthId, yearId) {
+      const day = document.getElementById(dayId).value.padStart(2, '0');
+      const month = document.getElementById(monthId).value.padStart(2, '0');
+      const year = document.getElementById(yearId).value;
       
-      if (!vehicleId || !companyId) {
-        window.location.href = 'index.html';
-        return;
+      if (day && month && year) {
+        const date = new Date(`${year}-${month}-${day}`);
+        if (isNaN(date.getTime())) {
+          return null;
+        }
+        return `${year}-${month}-${day}`;
       }
-      
-      const companies = JSON.parse(localStorage.getItem('companies')) || [];
-      const company = companies.find(c => c.id === companyId);
-      
-      if (!company) {
-        window.location.href = 'index.html';
-        return;
-      }
-      
-      const vehicle = company.vehicles.find(v => v.id === vehicleId);
-      
-      if (!vehicle) {
-        window.location.href = 'index.html';
-        return;
-      }
-      
-      // تعبئة النموذج ببيانات المركبة
-      document.getElementById('licenseNumber').value = vehicle.licenseNumber;
-      document.getElementById('licenseExpiry').value = vehicle.licenseExpiry;
-      document.getElementById('calibrationExpiry').value = vehicle.calibrationExpiry || '';
-      
-      // تحميل الصور الحالية
-      if (vehicle.images && vehicle.images.length > 0) {
-        images = [...vehicle.images];
-        renderImagePreview();
-      }
-    });
+      return null;
+    }
     
-    // إدارة النموذج
-    document.getElementById('vehicleForm').addEventListener('submit', function(e) {
+    // حدث حفظ التعديلات
+    document.getElementById('editForm').addEventListener('submit', (e) => {
       e.preventDefault();
       
       const urlParams = new URLSearchParams(window.location.search);
       const vehicleId = urlParams.get('id');
       const companyId = urlParams.get('companyId');
       
-      if (!vehicleId || !companyId) {
-        alert('خطأ في تحديد المركبة أو الشركة');
-        return;
-      }
-      
       const licenseNumber = document.getElementById('licenseNumber').value;
-      const licenseExpiry = document.getElementById('licenseExpiry').value;
-      const calibrationExpiry = document.getElementById('calibrationExpiry').value;
+      const licenseExpiry = getFormattedDate('licenseExpiryDay', 'licenseExpiryMonth', 'licenseExpiryYear');
+      const calibrationExpiry = getFormattedDate('calibrationExpiryDay', 'calibrationExpiryMonth', 'calibrationExpiryYear');
       
       if (!licenseNumber || !licenseExpiry) {
         alert('الرجاء إدخال البيانات المطلوبة');
         return;
       }
       
+      if (!licenseExpiry) {
+        alert('الرجاء إدخال تاريخ انتهاء الرخصة صحيح');
+        return;
+      }
+      
       const companies = JSON.parse(localStorage.getItem('companies')) || [];
       const companyIndex = companies.findIndex(c => c.id === companyId);
-      
-      if (companyIndex === -1) {
-        alert('الشركة غير موجودة');
-        return;
-      }
-      
       const vehicleIndex = companies[companyIndex].vehicles.findIndex(v => v.id === vehicleId);
-      
-      if (vehicleIndex === -1) {
-        alert('المركبة غير موجودة');
-        return;
-      }
       
       // تحديث بيانات المركبة
       companies[companyIndex].vehicles[vehicleIndex] = {
@@ -431,25 +478,14 @@
         licenseNumber,
         licenseExpiry,
         calibrationExpiry: calibrationExpiry || null,
-        images: [...images]
+        images: [...uploadedImages]
       };
       
       localStorage.setItem('companies', JSON.stringify(companies));
       
       alert('تم تحديث بيانات المركبة بنجاح');
-      window.location.href = `vehicle.html?id=${vehicleId}&companyId=${companyId}`;
-    });
-    
-    // زر العودة
-    document.getElementById('backBtn').addEventListener('click', function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const vehicleId = urlParams.get('id');
-      const companyId = urlParams.get('companyId');
-      window.location.href = `vehicle.html?id=${vehicleId}&companyId=${companyId}`;
+      window.location.href = `vehicle.html?id=${vehicleId}&companyId=${companyId}&t=${Date.now()}`;
     });
   </script>
-  
-  <!-- إضافة خط عربي -->
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 </body>
 </html>
