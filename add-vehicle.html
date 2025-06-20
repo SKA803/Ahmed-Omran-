@@ -82,6 +82,22 @@
       box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
     }
     
+    .manual-date-input {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .manual-date-input input {
+      flex: 1;
+      text-align: center;
+    }
+    
+    .date-format-hint {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 5px;
+    }
+    
     button {
       background: var(--primary-color);
       color: white;
@@ -227,6 +243,10 @@
         width: 70px;
         height: 70px;
       }
+      
+      .manual-date-input {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -242,12 +262,22 @@
       
       <div class="form-group">
         <label for="licenseExpiry">تاريخ انتهاء الرخصة</label>
-        <input type="date" id="licenseExpiry" required>
+        <div class="manual-date-input">
+          <input type="text" id="licenseExpiryDay" placeholder="يوم" maxlength="2" pattern="\d*" required>
+          <input type="text" id="licenseExpiryMonth" placeholder="شهر" maxlength="2" pattern="\d*" required>
+          <input type="text" id="licenseExpiryYear" placeholder="سنة" maxlength="4" pattern="\d*" required>
+        </div>
+        <div class="date-format-hint">صيغة التاريخ: يوم/شهر/سنة (مثال: 25/12/2023)</div>
       </div>
       
       <div class="form-group">
         <label for="calibrationExpiry">تاريخ انتهاء العيار</label>
-        <input type="date" id="calibrationExpiry">
+        <div class="manual-date-input">
+          <input type="text" id="calibrationExpiryDay" placeholder="يوم" maxlength="2" pattern="\d*">
+          <input type="text" id="calibrationExpiryMonth" placeholder="شهر" maxlength="2" pattern="\d*">
+          <input type="text" id="calibrationExpiryYear" placeholder="سنة" maxlength="4" pattern="\d*">
+        </div>
+        <div class="date-format-hint">صيغة التاريخ: يوم/شهر/سنة (مثال: 25/12/2023)</div>
       </div>
       
       <div class="upload-section">
@@ -411,6 +441,23 @@
       });
     }
     
+    // تحويل التاريخ المدخل إلى صيغة YYYY-MM-DD
+    function getFormattedDate(dayId, monthId, yearId) {
+      const day = document.getElementById(dayId).value.padStart(2, '0');
+      const month = document.getElementById(monthId).value.padStart(2, '0');
+      const year = document.getElementById(yearId).value;
+      
+      if (day && month && year) {
+        // التحقق من صحة التاريخ
+        const date = new Date(`${year}-${month}-${day}`);
+        if (isNaN(date.getTime())) {
+          return null;
+        }
+        return `${year}-${month}-${day}`;
+      }
+      return null;
+    }
+    
     // إرسال النموذج
     vehicleForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -424,11 +471,16 @@
       }
       
       const licenseNumber = document.getElementById('licenseNumber').value;
-      const licenseExpiry = document.getElementById('licenseExpiry').value;
-      const calibrationExpiry = document.getElementById('calibrationExpiry').value;
+      const licenseExpiry = getFormattedDate('licenseExpiryDay', 'licenseExpiryMonth', 'licenseExpiryYear');
+      const calibrationExpiry = getFormattedDate('calibrationExpiryDay', 'calibrationExpiryMonth', 'calibrationExpiryYear');
       
       if (!licenseNumber || !licenseExpiry) {
         alert('الرجاء إدخال البيانات المطلوبة');
+        return;
+      }
+      
+      if (!licenseExpiry) {
+        alert('الرجاء إدخال تاريخ انتهاء الرخصة صحيح');
         return;
       }
       
@@ -455,6 +507,22 @@
       
       alert('تم إضافة المركبة بنجاح');
       window.location.href = `company.html?id=${companyId}`;
+    });
+    
+    // إدخال أرقام فقط في حقول التاريخ
+    document.querySelectorAll('input[type="text"][pattern="\\d*"]').forEach(input => {
+      input.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+      });
+    });
+    
+    // التنقل التلقائي بين حقول التاريخ
+    document.querySelectorAll('.manual-date-input input').forEach((input, index, inputs) => {
+      input.addEventListener('input', function() {
+        if (this.value.length >= this.maxLength && index < inputs.length - 1) {
+          inputs[index + 1].focus();
+        }
+      });
     });
   </script>
   
