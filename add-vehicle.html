@@ -254,22 +254,27 @@
     .image-modal-content {
       max-width: 90%;
       max-height: 90%;
+      position: relative;
     }
     
     .image-modal-content img {
       max-width: 100%;
-      max-height: 90vh;
+      max-height: 80vh;
       display: block;
       margin: 0 auto;
+      border: 3px solid white;
+      border-radius: 5px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     }
     
     .close-modal {
       position: absolute;
       top: 20px;
-      left: 20px;
+      right: 20px;
       color: white;
       font-size: 30px;
       cursor: pointer;
+      z-index: 2;
     }
     
     .image-nav {
@@ -286,6 +291,7 @@
       align-items: center;
       justify-content: center;
       border-radius: 50%;
+      z-index: 2;
     }
     
     .prev-image {
@@ -330,6 +336,10 @@
         font-size: 20px;
         width: 40px;
         height: 40px;
+      }
+      
+      .image-modal-content img {
+        max-height: 70vh;
       }
     }
   </style>
@@ -423,14 +433,11 @@
     
     // متغيرات لعرض الصور
     let currentImageIndex = 0;
-    
-    // مصفوفة لحفظ الصور
     let uploadedImages = [];
     
     // أحداث تحميل الصور
     uploadBtn.addEventListener('click', () => fileInput.click());
     
-    // سحب وإسقاط الملفات
     uploadBtn.addEventListener('dragover', (e) => {
       e.preventDefault();
       uploadBtn.style.borderColor = 'var(--accent-color)';
@@ -460,20 +467,17 @@
       const files = fileInput.files;
       if (!files || files.length === 0) return;
       
-      // إظهار شريط التقدم
       progressContainer.style.display = 'block';
       progressBar.style.width = '0%';
       uploadStatus.textContent = `جاري تحميل ${files.length} صورة...`;
       uploadStatus.style.display = 'block';
       
-      // مسح الرسالة "لا توجد صور"
       if (thumbnailsContainer.querySelector('.no-images')) {
         thumbnailsContainer.innerHTML = '';
       }
       
       let loadedCount = 0;
       
-      // معالجة كل ملف
       Array.from(files).forEach((file) => {
         if (!file.type.match('image.*')) return;
         
@@ -482,18 +486,15 @@
         reader.onload = (e) => {
           loadedCount++;
           
-          // إضافة الصورة إلى المصفوفة
           uploadedImages.push({
             name: file.name,
             size: (file.size / 1024).toFixed(2) + ' KB',
             data: e.target.result
           });
           
-          // تحديث شريط التقدم
           const totalPercent = Math.round((loadedCount / files.length) * 100);
           progressBar.style.width = `${totalPercent}%`;
           
-          // إذا تم تحميل جميع الصور
           if (loadedCount === files.length) {
             setTimeout(() => {
               progressContainer.style.display = 'none';
@@ -549,6 +550,11 @@
           const index = parseInt(btn.getAttribute('data-index'));
           uploadedImages.splice(index, 1);
           renderThumbnails();
+          
+          // إذا كانت الصورة المحذوفة معروضة في النافذة الكبيرة
+          if (imageModal.style.display === 'flex' && currentImageIndex === index) {
+            closeImageModal();
+          }
         });
       });
     }
@@ -558,17 +564,19 @@
       currentImageIndex = index;
       modalImage.src = uploadedImages[index].data;
       imageModal.style.display = 'flex';
+      document.body.style.overflow = 'hidden'; // منع التمرير عند عرض الصورة الكبيرة
       updateImageCounter();
     }
     
     // إغلاق نافذة عرض الصورة الكبيرة
     function closeImageModal() {
       imageModal.style.display = 'none';
+      document.body.style.overflow = 'auto'; // إعادة التمرير
     }
     
     // عرض الصورة التالية
     function showNextImage() {
-      if (uploadedImages.length === 0) return;
+      if (uploadedImages.length <= 1) return;
       currentImageIndex = (currentImageIndex + 1) % uploadedImages.length;
       modalImage.src = uploadedImages[currentImageIndex].data;
       updateImageCounter();
@@ -576,7 +584,7 @@
     
     // عرض الصورة السابقة
     function showPrevImage() {
-      if (uploadedImages.length === 0) return;
+      if (uploadedImages.length <= 1) return;
       currentImageIndex = (currentImageIndex - 1 + uploadedImages.length) % uploadedImages.length;
       modalImage.src = uploadedImages[currentImageIndex].data;
       updateImageCounter();
@@ -619,7 +627,6 @@
       const year = document.getElementById(yearId).value;
       
       if (day && month && year) {
-        // التحقق من صحة التاريخ
         const date = new Date(`${year}-${month}-${day}`);
         if (isNaN(date.getTime())) {
           return null;
