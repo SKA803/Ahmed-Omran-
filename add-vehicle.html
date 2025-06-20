@@ -197,12 +197,18 @@
       border-radius: 5px;
       overflow: hidden;
       border: 1px solid #eee;
+      cursor: pointer;
     }
     
     .thumbnail img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    .thumbnail:hover img {
+      transform: scale(1.05);
     }
     
     .delete-btn {
@@ -219,6 +225,7 @@
       justify-content: center;
       cursor: pointer;
       font-size: 12px;
+      z-index: 2;
     }
     
     .no-images {
@@ -228,6 +235,77 @@
       background: #f9f9f9;
       border-radius: var(--border-radius);
       width: 100%;
+    }
+    
+    /* نافذة عرض الصورة الكبيرة */
+    .image-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .image-modal-content {
+      max-width: 90%;
+      max-height: 90%;
+    }
+    
+    .image-modal-content img {
+      max-width: 100%;
+      max-height: 90vh;
+      display: block;
+      margin: 0 auto;
+    }
+    
+    .close-modal {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+    }
+    
+    .image-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.5);
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    
+    .prev-image {
+      right: 20px;
+    }
+    
+    .next-image {
+      left: 20px;
+    }
+    
+    .image-counter {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 18px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 5px 15px;
+      border-radius: 20px;
     }
     
     @media (max-width: 768px) {
@@ -246,6 +324,12 @@
       
       .manual-date-input {
         flex-direction: column;
+      }
+      
+      .image-nav {
+        font-size: 20px;
+        width: 40px;
+        height: 40px;
       }
     }
   </style>
@@ -308,6 +392,17 @@
     </form>
   </div>
 
+  <!-- نافذة عرض الصورة الكبيرة -->
+  <div class="image-modal" id="imageModal">
+    <span class="close-modal">&times;</span>
+    <div class="image-nav next-image" id="nextImage">&rsaquo;</div>
+    <div class="image-nav prev-image" id="prevImage">&lsaquo;</div>
+    <div class="image-modal-content">
+      <img id="modalImage" src="" alt="صورة الرخصة">
+    </div>
+    <div class="image-counter" id="imageCounter"></div>
+  </div>
+
   <script>
     // عناصر DOM
     const uploadBtn = document.getElementById('uploadBtn');
@@ -317,6 +412,17 @@
     const uploadStatus = document.getElementById('uploadStatus');
     const thumbnailsContainer = document.getElementById('thumbnailsContainer');
     const vehicleForm = document.getElementById('vehicleForm');
+    
+    // عناصر نافذة الصورة الكبيرة
+    const imageModal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const closeModal = document.querySelector('.close-modal');
+    const nextImageBtn = document.getElementById('nextImage');
+    const prevImageBtn = document.getElementById('prevImage');
+    const imageCounter = document.getElementById('imageCounter');
+    
+    // متغيرات لعرض الصور
+    let currentImageIndex = 0;
     
     // مصفوفة لحفظ الصور
     let uploadedImages = [];
@@ -428,6 +534,12 @@
           <div class="delete-btn" data-index="${index}">×</div>
         `;
         thumbnailsContainer.appendChild(thumbnail);
+        
+        // إضافة حدث النقر على الصورة المصغرة
+        thumbnail.addEventListener('click', (e) => {
+          if (e.target.classList.contains('delete-btn')) return;
+          openImageModal(index);
+        });
       });
       
       // إضافة أحداث لحذف الصور
@@ -440,6 +552,65 @@
         });
       });
     }
+    
+    // فتح نافذة عرض الصورة الكبيرة
+    function openImageModal(index) {
+      currentImageIndex = index;
+      modalImage.src = uploadedImages[index].data;
+      imageModal.style.display = 'flex';
+      updateImageCounter();
+    }
+    
+    // إغلاق نافذة عرض الصورة الكبيرة
+    function closeImageModal() {
+      imageModal.style.display = 'none';
+    }
+    
+    // عرض الصورة التالية
+    function showNextImage() {
+      if (uploadedImages.length === 0) return;
+      currentImageIndex = (currentImageIndex + 1) % uploadedImages.length;
+      modalImage.src = uploadedImages[currentImageIndex].data;
+      updateImageCounter();
+    }
+    
+    // عرض الصورة السابقة
+    function showPrevImage() {
+      if (uploadedImages.length === 0) return;
+      currentImageIndex = (currentImageIndex - 1 + uploadedImages.length) % uploadedImages.length;
+      modalImage.src = uploadedImages[currentImageIndex].data;
+      updateImageCounter();
+    }
+    
+    // تحديث عداد الصور
+    function updateImageCounter() {
+      imageCounter.textContent = `${currentImageIndex + 1} / ${uploadedImages.length}`;
+    }
+    
+    // أحداث نافذة الصورة الكبيرة
+    closeModal.addEventListener('click', closeImageModal);
+    nextImageBtn.addEventListener('click', showNextImage);
+    prevImageBtn.addEventListener('click', showPrevImage);
+    
+    // إغلاق النافذة عند النقر خارج الصورة
+    imageModal.addEventListener('click', (e) => {
+      if (e.target === imageModal) {
+        closeImageModal();
+      }
+    });
+    
+    // التنقل بين الصور باستخدام لوحة المفاتيح
+    document.addEventListener('keydown', (e) => {
+      if (imageModal.style.display === 'flex') {
+        if (e.key === 'Escape') {
+          closeImageModal();
+        } else if (e.key === 'ArrowRight') {
+          showNextImage();
+        } else if (e.key === 'ArrowLeft') {
+          showPrevImage();
+        }
+      }
+    });
     
     // تحويل التاريخ المدخل إلى صيغة YYYY-MM-DD
     function getFormattedDate(dayId, monthId, yearId) {
