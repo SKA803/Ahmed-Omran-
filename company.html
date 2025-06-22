@@ -15,6 +15,8 @@
       --danger-hover: #d32f2f;
       --warning-color: #ff9800;
       --warning-hover: #e68a00;
+      --info-color: #17a2b8;
+      --info-hover: #138496;
       --text-color: #333;
       --light-bg: #f5f5f5;
       --white: #fff;
@@ -61,6 +63,13 @@
       font-weight: bold;
       margin: 0;
       color: #2c3e50;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .company-name i {
+      color: var(--primary-color);
     }
     
     .back-btn {
@@ -75,16 +84,12 @@
       align-items: center;
       border: none;
       cursor: pointer;
+      gap: 5px;
     }
     
     .back-btn:hover {
       background-color: var(--secondary-hover);
       transform: translateY(-2px);
-    }
-    
-    .back-btn i {
-      margin-right: 5px;
-      font-size: 0.9rem;
     }
     
     .summary-boxes {
@@ -106,6 +111,17 @@
       flex-direction: column;
       justify-content: space-between;
       cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .summary-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 4px;
     }
     
     .summary-item:hover {
@@ -119,6 +135,13 @@
       color: var(--primary-color);
       font-size: 1.1em;
       font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .summary-item h3 i {
+      font-size: 0.9em;
     }
     
     .summary-value {
@@ -128,16 +151,16 @@
       text-align: center;
     }
     
-    .active-licenses {
-      border-top: 4px solid var(--primary-color);
+    .active-licenses::before {
+      background-color: var(--primary-color);
     }
     
-    .expired-licenses {
-      border-top: 4px solid var(--danger-color);
+    .expired-licenses::before {
+      background-color: var(--danger-color);
     }
     
-    .expiring-soon {
-      border-top: 4px solid var(--warning-color);
+    .expiring-soon::before {
+      background-color: var(--warning-color);
     }
     
     .add-vehicle-btn {
@@ -155,6 +178,10 @@
       transition: var(--transition);
       font-weight: bold;
       box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
     
     .add-vehicle-btn:hover {
@@ -163,17 +190,14 @@
       box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
     }
     
-    .add-vehicle-btn i {
-      margin-left: 8px;
-    }
-    
     .search-box {
       margin-bottom: 20px;
+      position: relative;
     }
     
     .search-box input {
       width: 100%;
-      padding: 12px 20px;
+      padding: 12px 20px 12px 45px;
       border: 1px solid var(--border-color);
       border-radius: 30px;
       font-size: 1rem;
@@ -184,6 +208,14 @@
       outline: none;
       border-color: var(--primary-color);
       box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    }
+    
+    .search-box i {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #777;
     }
     
     table {
@@ -224,7 +256,9 @@
       border-radius: 4px;
       font-size: 0.9rem;
       transition: var(--transition);
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
     }
     
     .view-btn:hover {
@@ -249,6 +283,19 @@
     .active-box {
       transform: translateY(-5px);
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2) !important;
+      border: 1px solid;
+    }
+    
+    .active-box.active-licenses {
+      border-color: var(--primary-color);
+    }
+    
+    .active-box.expiring-soon {
+      border-color: var(--warning-color);
+    }
+    
+    .active-box.expired-licenses {
+      border-color: var(--danger-color);
     }
     
     @keyframes highlight {
@@ -263,25 +310,125 @@
     /* تعديلات جديدة */
     .license-status {
       display: inline-block;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-size: 0.8em;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.85em;
       font-weight: bold;
+      min-width: 120px;
     }
     
     .status-active {
       background-color: rgba(76, 175, 80, 0.1);
       color: var(--primary-color);
+      border: 1px solid var(--primary-color);
     }
     
     .status-expiring {
       background-color: rgba(255, 152, 0, 0.1);
       color: var(--warning-color);
+      border: 1px solid var(--warning-color);
     }
     
     .status-expired {
       background-color: rgba(244, 67, 54, 0.1);
       color: var(--danger-color);
+      border: 1px solid var(--danger-color);
+    }
+    
+    /* ملاحظات الشركة */
+    .notes-section {
+      margin: 30px 0;
+      border-top: 1px dashed var(--border-color);
+      padding-top: 20px;
+    }
+    
+    .notes-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .notes-title {
+      font-size: 1.3em;
+      color: var(--info-color);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .add-note-btn {
+      padding: 8px 15px;
+      background-color: var(--info-color);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: var(--transition);
+    }
+    
+    .add-note-btn:hover {
+      background-color: var(--info-hover);
+    }
+    
+    .notes-container {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      border: 1px solid var(--border-color);
+    }
+    
+    .note-item {
+      padding: 12px;
+      margin-bottom: 10px;
+      background-color: white;
+      border-radius: 6px;
+      box-shadow: var(--box-shadow);
+      border-left: 4px solid var(--info-color);
+      position: relative;
+    }
+    
+    .note-date {
+      font-size: 0.8em;
+      color: #777;
+      margin-top: 5px;
+      display: block;
+    }
+    
+    .note-actions {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      display: flex;
+      gap: 5px;
+    }
+    
+    .note-action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #777;
+      font-size: 0.9em;
+      transition: var(--transition);
+    }
+    
+    .note-action-btn:hover {
+      color: var(--danger-color);
+    }
+    
+    .no-notes {
+      text-align: center;
+      padding: 20px;
+      color: #7f8c8d;
+      font-style: italic;
+    }
+    
+    .serial-number {
+      font-weight: bold;
+      color: #2c3e50;
     }
     
     @media (max-width: 768px) {
@@ -292,10 +439,13 @@
       .company-header {
         flex-direction: column;
         align-items: flex-start;
+        gap: 10px;
       }
       
       .back-btn {
-        margin-top: 10px;
+        margin-top: 0;
+        width: 100%;
+        justify-content: center;
       }
       
       .summary-boxes {
@@ -309,6 +459,11 @@
       th, td {
         padding: 8px 5px;
       }
+      
+      .license-status {
+        min-width: auto;
+        padding: 3px 8px;
+      }
     }
     
     @media (max-width: 480px) {
@@ -320,6 +475,10 @@
         display: block;
         overflow-x: auto;
         white-space: nowrap;
+      }
+      
+      .company-name {
+        font-size: 1.5em;
       }
     }
   </style>
@@ -355,6 +514,28 @@
           window.location.href = `add-vehicle.html?companyId=${companyId}`;
         }
       });
+      
+      // إعداد حدث للنقر على زر إضافة ملاحظة
+      document.addEventListener('click', function(e) {
+        if (e.target && (e.target.id === 'addNoteBtn' || e.target.closest('#addNoteBtn'))) {
+          const companyId = new URLSearchParams(window.location.search).get('id');
+          const noteText = prompt('أدخل الملاحظة الجديدة:');
+          if (noteText && noteText.trim() !== '') {
+            addCompanyNote(companyId, noteText.trim());
+          }
+        }
+      });
+      
+      // إعداد حدث لحذف الملاحظات
+      document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('delete-note-btn')) {
+          const noteIndex = e.target.dataset.noteIndex;
+          const companyId = new URLSearchParams(window.location.search).get('id');
+          if (confirm('هل أنت متأكد من حذف هذه الملاحظة؟')) {
+            deleteCompanyNote(companyId, noteIndex);
+          }
+        }
+      });
     });
     
     function loadCompanyData() {
@@ -376,6 +557,7 @@
       
       // تهيئة بيانات الشركة إذا لم تكن موجودة
       if (!company.vehicles) company.vehicles = [];
+      if (!company.notes) company.notes = [];
       
       // حساب عدد المركبات حسب حالتها
       const vehicleCounts = countVehiclesByStatus(company.vehicles);
@@ -385,6 +567,9 @@
       
       // عرض جدول المركبات
       renderVehiclesTable(company.vehicles);
+      
+      // عرض ملاحظات الشركة
+      renderCompanyNotes(company.notes);
     }
     
     function countVehiclesByStatus(vehicles) {
@@ -428,7 +613,9 @@
       const container = document.getElementById('companyContainer');
       container.innerHTML = `
         <div class="company-header">
-          <h1 class="company-name">${company.name}</h1>
+          <h1 class="company-name">
+            <i class="fas fa-building"></i> ${company.name}
+          </h1>
           <button class="back-btn">
             <i class="fas fa-arrow-right"></i> العودة للقائمة
           </button>
@@ -436,15 +623,15 @@
         
         <div class="summary-boxes">
           <div class="summary-item active-licenses" onclick="filterVehicles('active', this)">
-            <h3>المركبات النشطة</h3>
+            <h3><i class="fas fa-check-circle"></i> المركبات النشطة</h3>
             <div class="summary-value">${counts.active}</div>
           </div>
           <div class="summary-item expiring-soon" onclick="filterVehicles('expiring', this)">
-            <h3>مركبات قريبة من الانتهاء</h3>
+            <h3><i class="fas fa-exclamation-triangle"></i> مركبات قريبة من الانتهاء</h3>
             <div class="summary-value">${counts.expiring}</div>
           </div>
           <div class="summary-item expired-licenses" onclick="filterVehicles('expired', this)">
-            <h3>مركبات منتهية</h3>
+            <h3><i class="fas fa-times-circle"></i> مركبات منتهية</h3>
             <div class="summary-value">${counts.expired}</div>
           </div>
         </div>
@@ -454,12 +641,14 @@
         </button>
         
         <div class="search-box">
+          <i class="fas fa-search"></i>
           <input type="text" id="searchInput" placeholder="ابحث برقم الرخصة...">
         </div>
         
         <table id="vehiclesTable">
           <thead>
             <tr>
+              <th width="50">م</th>
               <th>رقم الرخصة</th>
               <th>تاريخ انتهاء الرخصة</th>
               <th>تاريخ انتهاء العيار</th>
@@ -469,6 +658,16 @@
           </thead>
           <tbody></tbody>
         </table>
+        
+        <div class="notes-section">
+          <div class="notes-header">
+            <h2 class="notes-title"><i class="fas fa-sticky-note"></i> ملاحظات الشركة</h2>
+            <button id="addNoteBtn" class="add-note-btn">
+              <i class="fas fa-plus"></i> إضافة ملاحظة
+            </button>
+          </div>
+          <div class="notes-container" id="notesContainer"></div>
+        </div>
       `;
     }
     
@@ -478,7 +677,7 @@
       
       if (vehicles.length === 0) {
         const row = document.createElement('tr');
-        row.innerHTML = `<td colspan="5" class="no-vehicles">لا توجد مركبات مسجلة</td>`;
+        row.innerHTML = `<td colspan="6" class="no-vehicles">لا توجد مركبات مسجلة</td>`;
         tableBody.appendChild(row);
         return;
       }
@@ -487,7 +686,7 @@
       const soonDate = new Date();
       soonDate.setDate(now.getDate() + 30);
       
-      vehicles.forEach(vehicle => {
+      vehicles.forEach((vehicle, index) => {
         const row = document.createElement('tr');
         const status = getVehicleStatus(vehicle, now, soonDate);
         
@@ -506,18 +705,77 @@
                           status === 'expiring' ? 'status-expiring' : 'status-expired';
         
         row.innerHTML = `
+          <td class="serial-number">${index + 1}</td>
           <td>${vehicle.licenseNumber}</td>
           <td>${formatDate(vehicle.licenseExpiry)}</td>
           <td>${vehicle.calibrationExpiry ? formatDate(vehicle.calibrationExpiry) : '-'}</td>
           <td><span class="license-status ${statusClass}">${statusText}</span></td>
           <td>
             <a href="vehicle.html?id=${vehicle.id}&companyId=${new URLSearchParams(window.location.search).get('id')}" class="view-btn">
-              <i class="fas fa-eye"></i> عرض المزيد
+              <i class="fas fa-eye"></i> عرض
             </a>
           </td>
         `;
         tableBody.appendChild(row);
       });
+    }
+    
+    function renderCompanyNotes(notes) {
+      const notesContainer = document.getElementById('notesContainer');
+      notesContainer.innerHTML = '';
+      
+      if (notes.length === 0) {
+        notesContainer.innerHTML = '<div class="no-notes">لا توجد ملاحظات مسجلة</div>';
+        return;
+      }
+      
+      notes.forEach((note, index) => {
+        const noteElement = document.createElement('div');
+        noteElement.className = 'note-item';
+        noteElement.innerHTML = `
+          <div class="note-actions">
+            <button class="note-action-btn delete-note-btn" data-note-index="${index}">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+          <div class="note-text">${note.text}</div>
+          <span class="note-date">${formatDateTime(note.date)}</span>
+        `;
+        notesContainer.appendChild(noteElement);
+      });
+    }
+    
+    function addCompanyNote(companyId, noteText) {
+      const companies = JSON.parse(localStorage.getItem('companies')) || [];
+      const companyIndex = companies.findIndex(c => c.id === companyId);
+      
+      if (companyIndex !== -1) {
+        if (!companies[companyIndex].notes) {
+          companies[companyIndex].notes = [];
+        }
+        
+        const newNote = {
+          text: noteText,
+          date: new Date().toISOString()
+        };
+        
+        companies[companyIndex].notes.unshift(newNote);
+        localStorage.setItem('companies', JSON.stringify(companies));
+        
+        renderCompanyNotes(companies[companyIndex].notes);
+      }
+    }
+    
+    function deleteCompanyNote(companyId, noteIndex) {
+      const companies = JSON.parse(localStorage.getItem('companies')) || [];
+      const companyIndex = companies.findIndex(c => c.id === companyId);
+      
+      if (companyIndex !== -1 && companies[companyIndex].notes && companies[companyIndex].notes[noteIndex]) {
+        companies[companyIndex].notes.splice(noteIndex, 1);
+        localStorage.setItem('companies', JSON.stringify(companies));
+        
+        renderCompanyNotes(companies[companyIndex].notes);
+      }
     }
     
     function filterVehicles(type, clickedElement) {
@@ -552,7 +810,7 @@
       const rows = document.querySelectorAll('#vehiclesTable tbody tr');
       
       rows.forEach(row => {
-        const licenseNumber = row.cells[0].textContent.toLowerCase();
+        const licenseNumber = row.cells[1].textContent.toLowerCase();
         if (licenseNumber.includes(term)) {
           row.style.display = '';
           row.classList.add('highlight-row');
@@ -566,6 +824,18 @@
     function formatDate(dateString) {
       if (!dateString) return '-';
       const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      return new Date(dateString).toLocaleDateString('ar-EG', options);
+    }
+    
+    function formatDateTime(dateString) {
+      if (!dateString) return '';
+      const options = { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      };
       return new Date(dateString).toLocaleDateString('ar-EG', options);
     }
     
