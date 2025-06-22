@@ -601,9 +601,12 @@
       }
     });
     
-    // تحويل التاريخ المدخل إلى صيغة YYYY-MM-DD
+    // تحويل التاريخ المدخل إلى صيغة YYYY-MM-DD مع التحقق من الصحة
     function parseDateInput(dateStr) {
       if (!dateStr) return null;
+      
+      // التحقق من أن النص يحتوي على شرطتين مائلتين
+      if ((dateStr.match(/\//g) || []).length !== 2) return null;
       
       const parts = dateStr.split('/');
       if (parts.length !== 3) return null;
@@ -612,7 +615,7 @@
       
       if (!day || !month || !year) return null;
       
-      // التحقق من صحة التاريخ
+      // التحقق من أن الأجزاء أرقام
       const dayNum = parseInt(day);
       const monthNum = parseInt(month);
       const yearNum = parseInt(year);
@@ -621,6 +624,13 @@
       
       // التحقق من صحة اليوم والشهر
       if (dayNum < 1 || dayNum > 31 || monthNum < 1 || monthNum > 12) return null;
+      
+      // التحقق من صحة السنة (بافتراض أنها يجب أن تكون بين 2000 و2100)
+      if (yearNum < 2000 || yearNum > 2100) return null;
+      
+      // التحقق من صحة أيام الشهر
+      const daysInMonth = new Date(yearNum, monthNum, 0).getDate();
+      if (dayNum > daysInMonth) return null;
       
       // تنسيق التاريخ مع إضافة صفر للأرقام المفردة
       const formattedDay = dayNum < 10 ? `0${dayNum}` : dayNum;
@@ -641,18 +651,28 @@
         return;
       }
       
-      const licenseNumber = document.getElementById('licenseNumber').value;
-      const licenseExpiry = parseDateInput(document.getElementById('licenseExpiry').value);
-      const calibrationExpiry = parseDateInput(document.getElementById('calibrationExpiry').value);
+      const licenseNumber = document.getElementById('licenseNumber').value.trim();
+      const licenseExpiryInput = document.getElementById('licenseExpiry').value.trim();
+      const calibrationExpiryInput = document.getElementById('calibrationExpiry').value.trim();
       
-      if (!licenseNumber || !licenseExpiry) {
-        alert('الرجاء إدخال البيانات المطلوبة');
+      if (!licenseNumber || !licenseExpiryInput) {
+        alert('الرجاء إدخال البيانات المطلوبة (رقم الرخصة وتاريخ انتهائها)');
         return;
       }
       
+      const licenseExpiry = parseDateInput(licenseExpiryInput);
       if (!licenseExpiry) {
         alert('الرجاء إدخال تاريخ انتهاء الرخصة صحيح (يوم/شهر/سنة)');
         return;
+      }
+      
+      let calibrationExpiry = null;
+      if (calibrationExpiryInput) {
+        calibrationExpiry = parseDateInput(calibrationExpiryInput);
+        if (!calibrationExpiry) {
+          alert('الرجاء إدخال تاريخ انتهاء العيار صحيح (يوم/شهر/سنة) أو ترك الحقل فارغاً');
+          return;
+        }
       }
       
       const companies = JSON.parse(localStorage.getItem('companies')) || [];
@@ -668,11 +688,14 @@
         id: Date.now().toString(),
         licenseNumber,
         licenseExpiry,
-        calibrationExpiry: calibrationExpiry || null,
+        calibrationExpiry,
         images: [...uploadedImages]
       };
       
       // إضافة المركبة للشركة
+      if (!companies[companyIndex].vehicles) {
+        companies[companyIndex].vehicles = [];
+      }
       companies[companyIndex].vehicles.push(newVehicle);
       localStorage.setItem('companies', JSON.stringify(companies));
       
