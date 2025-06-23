@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>إضافة مركبة جديدة</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- إضافة مكتبة ضغط البيانات -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
   <style>
     :root {
       --primary-color: #4361ee;
@@ -14,6 +16,7 @@
       --dark-color: #212529;
       --danger-color: #f72585;
       --success-color: #4cc9f0;
+      --warning-color: #ff9e00;
       --border-radius: 8px;
       --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       --transition: all 0.3s ease;
@@ -131,6 +134,7 @@
       cursor: pointer;
       transition: var(--transition);
       margin-bottom: 15px;
+      position: relative;
     }
     
     .upload-btn:hover {
@@ -167,10 +171,29 @@
     
     .upload-status {
       text-align: center;
-      color: var(--accent-color);
       margin: 10px 0;
       font-size: 0.9rem;
       display: none;
+      padding: 10px;
+      border-radius: var(--border-radius);
+    }
+    
+    .status-success {
+      background-color: rgba(76, 201, 240, 0.1);
+      color: var(--success-color);
+      border: 1px solid var(--success-color);
+    }
+    
+    .status-error {
+      background-color: rgba(247, 37, 133, 0.1);
+      color: var(--danger-color);
+      border: 1px solid var(--danger-color);
+    }
+    
+    .status-warning {
+      background-color: rgba(255, 158, 0, 0.1);
+      color: var(--warning-color);
+      border: 1px solid var(--warning-color);
     }
     
     .thumbnails-container {
@@ -182,8 +205,8 @@
     
     .thumbnail {
       position: relative;
-      width: 80px;
-      height: 80px;
+      width: 100px;
+      height: 100px;
       border-radius: 5px;
       overflow: hidden;
       border: 1px solid #eee;
@@ -207,15 +230,22 @@
       left: 5px;
       background: var(--danger-color);
       color: white;
-      width: 20px;
-      height: 20px;
+      width: 25px;
+      height: 25px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 12px;
+      font-size: 14px;
       z-index: 2;
+      opacity: 0.8;
+      transition: var(--transition);
+    }
+    
+    .delete-btn:hover {
+      opacity: 1;
+      transform: scale(1.1);
     }
     
     .no-images {
@@ -225,6 +255,24 @@
       background: #f9f9f9;
       border-radius: var(--border-radius);
       width: 100%;
+    }
+    
+    .image-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 5px;
+      font-size: 0.7rem;
+      text-align: center;
+      transform: translateY(100%);
+      transition: var(--transition);
+    }
+    
+    .thumbnail:hover .image-info {
+      transform: translateY(0);
     }
     
     /* نافذة عرض الصورة الكبيرة */
@@ -265,6 +313,19 @@
       font-size: 30px;
       cursor: pointer;
       z-index: 2;
+      background: rgba(0, 0, 0, 0.5);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+    
+    .close-modal:hover {
+      background: rgba(0, 0, 0, 0.8);
+      transform: rotate(90deg);
     }
     
     .image-nav {
@@ -282,6 +343,12 @@
       justify-content: center;
       border-radius: 50%;
       z-index: 2;
+      transition: var(--transition);
+    }
+    
+    .image-nav:hover {
+      background: rgba(0, 0, 0, 0.8);
+      transform: translateY(-50%) scale(1.1);
     }
     
     .prev-image {
@@ -304,6 +371,27 @@
       border-radius: 20px;
     }
     
+    /* رسائل التنبيه */
+    .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: var(--border-radius);
+      display: none;
+    }
+    
+    .alert-error {
+      background-color: rgba(247, 37, 133, 0.1);
+      color: var(--danger-color);
+      border: 1px solid var(--danger-color);
+    }
+    
+    .alert-success {
+      background-color: rgba(76, 201, 240, 0.1);
+      color: var(--success-color);
+      border: 1px solid var(--success-color);
+    }
+    
+    /* تحسينات للجوال */
     @media (max-width: 768px) {
       .container {
         padding: 20px;
@@ -314,8 +402,8 @@
       }
       
       .thumbnail {
-        width: 70px;
-        height: 70px;
+        width: 80px;
+        height: 80px;
       }
       
       .image-nav {
@@ -333,6 +421,9 @@
 <body>
   <div class="container">
     <h1><i class="fas fa-car"></i> إضافة مركبة جديدة</h1>
+    
+    <!-- رسالة الخطأ العامة -->
+    <div id="globalAlert" class="alert alert-error"></div>
     
     <form id="vehicleForm">
       <div class="form-group">
@@ -358,7 +449,8 @@
         <div class="upload-btn" id="uploadBtn">
           <i class="fas fa-cloud-upload-alt"></i>
           <p>انقر لاختيار الصور أو اسحبها هنا</p>
-          <small>يمكنك تحميل أكثر من صورة (JPEG, PNG, JPG, GIF)</small>
+          <small>يمكنك تحميل أي عدد من الصور (JPEG, PNG, JPG, GIF, WEBP, SVG, HEIC, HEIF)</small>
+          <small>الحجم الأقصى للصورة: 5MB</small>
         </div>
         
         <input type="file" id="fileInput" class="file-input" multiple accept="image/*">
@@ -400,6 +492,7 @@
     const uploadStatus = document.getElementById('uploadStatus');
     const thumbnailsContainer = document.getElementById('thumbnailsContainer');
     const vehicleForm = document.getElementById('vehicleForm');
+    const globalAlert = document.getElementById('globalAlert');
     
     // عناصر نافذة الصورة الكبيرة
     const imageModal = document.getElementById('imageModal');
@@ -412,8 +505,246 @@
     // متغيرات لعرض الصور
     let currentImageIndex = 0;
     let uploadedImages = [];
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
     
+    // ==============================================
+    // وظائف مساعدة للتخزين
+    // ==============================================
+    
+    // دالة لضغط البيانات قبل التخزين
+    function compressData(data) {
+      try {
+        const jsonString = JSON.stringify(data);
+        return LZString.compressToUTF16(jsonString);
+      } catch (error) {
+        console.error('Error compressing data:', error);
+        return null;
+      }
+    }
+    
+    // دالة لفك ضغط البيانات بعد القراءة
+    function decompressData(compressedData) {
+      try {
+        const jsonString = LZString.decompressFromUTF16(compressedData);
+        return jsonString ? JSON.parse(jsonString) : null;
+      } catch (error) {
+        console.error('Error decompressing data:', error);
+        return null;
+      }
+    }
+    
+    // دالة محسنة للتخزين مع التعامل مع الأخطاء
+    function safeLocalStorageSet(key, value) {
+      try {
+        // محاولة ضغط البيانات أولاً
+        const compressedValue = compressData(value);
+        
+        if (!compressedValue) {
+          throw new Error('Failed to compress data');
+        }
+        
+        // تقسيم البيانات إذا كانت كبيرة جداً
+        const maxChunkSize = 1024 * 1024 * 2; // 2MB لكل جزء
+        if (compressedValue.length > maxChunkSize) {
+          const chunks = [];
+          for (let i = 0; i < compressedValue.length; i += maxChunkSize) {
+            chunks.push(compressedValue.substr(i, maxChunkSize));
+          }
+          
+          // تخزين عدد الأجزاء أولاً
+          localStorage.setItem(`${key}_chunks`, chunks.length);
+          
+          // تخزين كل جزء
+          chunks.forEach((chunk, index) => {
+            localStorage.setItem(`${key}_${index}`, chunk);
+          });
+          
+          return true;
+        } else {
+          // تخزين البيانات كاملة إذا كانت صغيرة
+          localStorage.setItem(key, compressedValue);
+          return true;
+        }
+      } catch (error) {
+        console.error('Error storing data:', error);
+        
+        // محاولة تخزين نسخة مخففة من البيانات (بدون الصور)
+        try {
+          const simplifiedData = {
+            ...value,
+            companies: value.companies.map(company => ({
+              ...company,
+              vehicles: company.vehicles.map(vehicle => ({
+                ...vehicle,
+                images: [] // إزالة الصور لتقليل الحجم
+              }))
+            }))
+          };
+          
+          const compressedSimplified = compressData(simplifiedData);
+          if (compressedSimplified) {
+            localStorage.setItem(key, compressedSimplified);
+            return true;
+          }
+        } catch (simplifyError) {
+          console.error('Error storing simplified data:', simplifyError);
+        }
+        
+        return false;
+      }
+    }
+    
+    // دالة محسنة للقراءة مع التعامل مع الأجزاء
+    function safeLocalStorageGet(key) {
+      try {
+        // التحقق إذا كانت البيانات مقسمة لأجزاء
+        const chunksCount = localStorage.getItem(`${key}_chunks`);
+        
+        if (chunksCount) {
+          // جمع الأجزاء معاً
+          let compressedData = '';
+          for (let i = 0; i < parseInt(chunksCount); i++) {
+            const chunk = localStorage.getItem(`${key}_${i}`);
+            if (chunk) {
+              compressedData += chunk;
+            }
+          }
+          
+          return decompressData(compressedData);
+        } else {
+          // قراءة البيانات العادية
+          const compressedData = localStorage.getItem(key);
+          return decompressData(compressedData);
+        }
+      } catch (error) {
+        console.error('Error reading data:', error);
+        return null;
+      }
+    }
+    
+    // ==============================================
+    // وظائف مساعدة أخرى
+    // ==============================================
+    
+    // عرض رسالة خطأ
+    function showAlert(message, type = 'error', duration = 5000) {
+      globalAlert.textContent = message;
+      globalAlert.className = `alert alert-${type}`;
+      globalAlert.style.display = 'block';
+      
+      if (duration > 0) {
+        setTimeout(() => {
+          globalAlert.style.display = 'none';
+        }, duration);
+      }
+    }
+    
+    // إخفاء رسالة الخطأ
+    function hideAlert() {
+      globalAlert.style.display = 'none';
+    }
+    
+    // التحقق من نوع الملف
+    function isValidImageType(file) {
+      const validTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+        'image/svg+xml',
+        'image/heic',
+        'image/heif'
+      ];
+      
+      return validTypes.includes(file.type);
+    }
+    
+    // تدوير الصورة بناءً على بيانات EXIF
+    function rotateImageBasedOnExif(img, orientation) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      if ([5, 6, 7, 8].includes(orientation)) {
+        canvas.width = img.height;
+        canvas.height = img.width;
+      } else {
+        canvas.width = img.width;
+        canvas.height = img.height;
+      }
+      
+      switch (orientation) {
+        case 2: ctx.transform(-1, 0, 0, 1, img.width, 0); break;
+        case 3: ctx.transform(-1, 0, 0, -1, img.width, img.height); break;
+        case 4: ctx.transform(1, 0, 0, -1, 0, img.height); break;
+        case 5: ctx.transform(0, 1, 1, 0, 0, 0); break;
+        case 6: ctx.transform(0, 1, -1, 0, img.height, 0); break;
+        case 7: ctx.transform(0, -1, -1, 0, img.height, img.width); break;
+        case 8: ctx.transform(0, -1, 1, 0, 0, img.width); break;
+        default: break;
+      }
+      
+      ctx.drawImage(img, 0, 0);
+      return canvas.toDataURL('image/jpeg', 0.9);
+    }
+    
+    // قراءة بيانات EXIF للصورة
+    function getImageOrientation(file, callback) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        const view = new DataView(e.target.result);
+        
+        if (view.getUint16(0, false) !== 0xFFD8) {
+          return callback(-1);
+        }
+        
+        const length = view.byteLength;
+        let offset = 2;
+        
+        while (offset < length) {
+          const marker = view.getUint16(offset, false);
+          offset += 2;
+          
+          if (marker === 0xFFE1) {
+            if (view.getUint32(offset += 2, false) !== 0x45786966) {
+              return callback(-1);
+            }
+            
+            const little = view.getUint16(offset += 6, false) === 0x4949;
+            offset += view.getUint32(offset + 4, little);
+            const tags = view.getUint16(offset, little);
+            offset += 2;
+            
+            for (let i = 0; i < tags; i++) {
+              if (view.getUint16(offset + (i * 12), little) === 0x0112) {
+                return callback(view.getUint16(offset + (i * 12) + 8, little));
+              }
+            }
+          } else if ((marker & 0xFF00) !== 0xFF00) {
+            break;
+          } else {
+            offset += view.getUint16(offset, false);
+          }
+        }
+        return callback(-1);
+      };
+      
+      reader.readAsArrayBuffer(file.slice(0, 64 * 1024));
+    }
+    
+    // تنسيق حجم الملف
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // ==============================================
     // أحداث تحميل الصور
+    // ==============================================
+    
     uploadBtn.addEventListener('click', () => fileInput.click());
     
     uploadBtn.addEventListener('dragover', (e) => {
@@ -440,14 +771,19 @@
     
     fileInput.addEventListener('change', handleFileUpload);
     
+    // ==============================================
     // معالجة تحميل الملفات
+    // ==============================================
+    
     function handleFileUpload() {
       const files = fileInput.files;
       if (!files || files.length === 0) return;
       
+      // إعادة تعيين حالة التحميل
       progressContainer.style.display = 'block';
       progressBar.style.width = '0%';
-      uploadStatus.textContent = `جاري تحميل ${files.length} صورة...`;
+      uploadStatus.textContent = `جاري معالجة ${files.length} ملف...`;
+      uploadStatus.className = 'upload-status status-warning';
       uploadStatus.style.display = 'block';
       
       if (thumbnailsContainer.querySelector('.no-images')) {
@@ -455,51 +791,114 @@
       }
       
       let loadedCount = 0;
+      let validImages = 0;
+      let errorMessages = [];
       
       Array.from(files).forEach((file) => {
-        if (!file.type.match('image.*')) {
+        // التحقق من نوع الملف
+        if (!isValidImageType(file)) {
+          errorMessages.push(`الملف "${file.name}" ليس صورة مدعومة`);
           loadedCount++;
+          updateProgress();
           return;
         }
         
-        const reader = new FileReader();
-        
-        reader.onload = (e) => {
+        // التحقق من حجم الملف
+        if (file.size > MAX_FILE_SIZE) {
+          errorMessages.push(`الملف "${file.name}" حجمه كبير جداً (الحد الأقصى 5MB)`);
           loadedCount++;
-          
-          uploadedImages.push({
-            name: file.name,
-            size: (file.size / 1024).toFixed(2) + ' KB',
-            data: e.target.result
-          });
-          
-          const totalPercent = Math.round((loadedCount / files.length) * 100);
-          progressBar.style.width = `${totalPercent}%`;
-          
-          if (loadedCount === files.length) {
-            setTimeout(() => {
-              progressContainer.style.display = 'none';
-              uploadStatus.textContent = `تم تحميل ${loadedCount} صورة بنجاح`;
-              
-              setTimeout(() => {
-                uploadStatus.style.display = 'none';
-              }, 2000);
-              
-              renderThumbnails();
-            }, 500);
-          }
-        };
+          updateProgress();
+          return;
+        }
         
-        reader.onerror = () => {
-          uploadStatus.textContent = 'حدث خطأ أثناء تحميل الصور';
-          uploadStatus.style.color = 'var(--danger-color)';
-        };
-        
-        reader.readAsDataURL(file);
+        // قراءة بيانات EXIF أولاً
+        getImageOrientation(file, (orientation) => {
+          const reader = new FileReader();
+          
+          reader.onload = (e) => {
+            const img = new Image();
+            img.onload = function() {
+              let imageData = e.target.result;
+              
+              // إذا كانت الصورة تحتاج إلى تدوير
+              if (orientation && orientation > 1) {
+                try {
+                  imageData = rotateImageBasedOnExif(img, orientation);
+                } catch (error) {
+                  console.error('Error rotating image:', error);
+                }
+              }
+              
+              loadedCount++;
+              validImages++;
+              
+              uploadedImages.push({
+                name: file.name,
+                size: formatFileSize(file.size),
+                type: file.type,
+                dimensions: `${img.width} × ${img.height}`,
+                data: imageData,
+                originalFile: file
+              });
+              
+              updateProgress();
+            };
+            
+            img.onerror = () => {
+              loadedCount++;
+              errorMessages.push(`تعذر تحميل الصورة "${file.name}"`);
+              updateProgress();
+            };
+            
+            img.src = e.target.result;
+          };
+          
+          reader.onerror = () => {
+            loadedCount++;
+            errorMessages.push(`حدث خطأ أثناء قراءة الملف "${file.name}"`);
+            updateProgress();
+          };
+          
+          reader.readAsDataURL(file);
+        });
       });
+      
+      function updateProgress() {
+        const totalPercent = Math.round((loadedCount / files.length) * 100);
+        progressBar.style.width = `${totalPercent}%`;
+        
+        if (loadedCount === files.length) {
+          setTimeout(() => {
+            progressContainer.style.display = 'none';
+            
+            if (validImages > 0) {
+              uploadStatus.textContent = `تم تحميل ${validImages} صورة بنجاح`;
+              uploadStatus.className = 'upload-status status-success';
+              
+              if (errorMessages.length > 0) {
+                uploadStatus.textContent += ` (مع ${errorMessages.length} أخطاء)`;
+                showAlert(`تم تحميل ${validImages} صورة بنجاح، ولكن حدثت بعض الأخطاء:\n${errorMessages.join('\n')}`, 'warning');
+              }
+            } else {
+              uploadStatus.textContent = 'لم يتم تحميل أي صور صالحة';
+              uploadStatus.className = 'upload-status status-error';
+              showAlert(errorMessages.join('\n') || 'لم يتم تحميل أي صور صالحة', 'error');
+            }
+            
+            setTimeout(() => {
+              uploadStatus.style.display = 'none';
+            }, 5000);
+            
+            renderThumbnails();
+          }, 500);
+        }
+      }
     }
     
+    // ==============================================
     // عرض الصور المصغرة
+    // ==============================================
+    
     function renderThumbnails() {
       thumbnailsContainer.innerHTML = '';
       
@@ -512,14 +911,18 @@
         const thumbnail = document.createElement('div');
         thumbnail.className = 'thumbnail';
         thumbnail.innerHTML = `
-          <img src="${image.data}" alt="${image.name}">
-          <div class="delete-btn" data-index="${index}">×</div>
+          <img src="${image.data}" alt="${image.name}" loading="lazy">
+          <div class="delete-btn" data-index="${index}" title="حذف الصورة">×</div>
+          <div class="image-info">
+            ${image.name}<br>
+            ${image.dimensions} | ${image.size}
+          </div>
         `;
         thumbnailsContainer.appendChild(thumbnail);
         
         // إضافة حدث النقر على الصورة المصغرة
         thumbnail.addEventListener('click', (e) => {
-          if (e.target.classList.contains('delete-btn')) return;
+          if (e.target.classList.contains('delete-btn') || e.target.classList.contains('image-info')) return;
           openImageModal(index);
         });
       });
@@ -540,22 +943,23 @@
       });
     }
     
-    // فتح نافذة عرض الصورة الكبيرة
+    // ==============================================
+    // نافذة عرض الصورة الكبيرة
+    // ==============================================
+    
     function openImageModal(index) {
       currentImageIndex = index;
       modalImage.src = uploadedImages[index].data;
       imageModal.style.display = 'flex';
-      document.body.style.overflow = 'hidden'; // منع التمرير عند عرض الصورة الكبيرة
+      document.body.style.overflow = 'hidden';
       updateImageCounter();
     }
     
-    // إغلاق نافذة عرض الصورة الكبيرة
     function closeImageModal() {
       imageModal.style.display = 'none';
-      document.body.style.overflow = 'auto'; // إعادة التمرير
+      document.body.style.overflow = 'auto';
     }
     
-    // عرض الصورة التالية
     function showNextImage() {
       if (uploadedImages.length <= 1) return;
       currentImageIndex = (currentImageIndex + 1) % uploadedImages.length;
@@ -563,7 +967,6 @@
       updateImageCounter();
     }
     
-    // عرض الصورة السابقة
     function showPrevImage() {
       if (uploadedImages.length <= 1) return;
       currentImageIndex = (currentImageIndex - 1 + uploadedImages.length) % uploadedImages.length;
@@ -571,7 +974,6 @@
       updateImageCounter();
     }
     
-    // تحديث عداد الصور
     function updateImageCounter() {
       imageCounter.textContent = `${currentImageIndex + 1} / ${uploadedImages.length}`;
     }
@@ -600,6 +1002,10 @@
         }
       }
     });
+    
+    // ==============================================
+    // معالجة النموذج
+    // ==============================================
     
     // تحويل التاريخ المدخل إلى صيغة YYYY-MM-DD مع التحقق من الصحة
     function parseDateInput(dateStr) {
@@ -640,68 +1046,112 @@
     }
     
     // إرسال النموذج
-    vehicleForm.addEventListener('submit', (e) => {
+    vehicleForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      hideAlert();
       
-      const urlParams = new URLSearchParams(window.location.search);
-      const companyId = urlParams.get('companyId');
-      
-      if (!companyId) {
-        alert('خطأ في تحديد الشركة');
-        return;
-      }
-      
-      const licenseNumber = document.getElementById('licenseNumber').value.trim();
-      const licenseExpiryInput = document.getElementById('licenseExpiry').value.trim();
-      const calibrationExpiryInput = document.getElementById('calibrationExpiry').value.trim();
-      
-      if (!licenseNumber || !licenseExpiryInput) {
-        alert('الرجاء إدخال البيانات المطلوبة (رقم الرخصة وتاريخ انتهائها)');
-        return;
-      }
-      
-      const licenseExpiry = parseDateInput(licenseExpiryInput);
-      if (!licenseExpiry) {
-        alert('الرجاء إدخال تاريخ انتهاء الرخصة صحيح (يوم/شهر/سنة)');
-        return;
-      }
-      
-      let calibrationExpiry = null;
-      if (calibrationExpiryInput) {
-        calibrationExpiry = parseDateInput(calibrationExpiryInput);
-        if (!calibrationExpiry) {
-          alert('الرجاء إدخال تاريخ انتهاء العيار صحيح (يوم/شهر/سنة) أو ترك الحقل فارغاً');
-          return;
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const companyId = urlParams.get('companyId');
+        
+        if (!companyId) {
+          throw new Error('خطأ في تحديد الشركة');
         }
+        
+        const licenseNumber = document.getElementById('licenseNumber').value.trim();
+        const licenseExpiryInput = document.getElementById('licenseExpiry').value.trim();
+        const calibrationExpiryInput = document.getElementById('calibrationExpiry').value.trim();
+        
+        if (!licenseNumber || !licenseExpiryInput) {
+          throw new Error('الرجاء إدخال البيانات المطلوبة (رقم الرخصة وتاريخ انتهائها)');
+        }
+        
+        const licenseExpiry = parseDateInput(licenseExpiryInput);
+        if (!licenseExpiry) {
+          throw new Error('الرجاء إدخال تاريخ انتهاء الرخصة صحيح (يوم/شهر/سنة)');
+        }
+        
+        let calibrationExpiry = null;
+        if (calibrationExpiryInput) {
+          calibrationExpiry = parseDateInput(calibrationExpiryInput);
+          if (!calibrationExpiry) {
+            throw new Error('الرجاء إدخال تاريخ انتهاء العيار صحيح (يوم/شهر/سنة) أو ترك الحقل فارغاً');
+          }
+        }
+        
+        // التحقق من وجود صور مرفوعة
+        if (uploadedImages.length === 0) {
+          const confirmUpload = confirm('لم تقم برفع أي صور للرخصة. هل تريد المتابعة دون رفع الصور؟');
+          if (!confirmUpload) return;
+        }
+        
+        // قراءة البيانات الحالية
+        let companies = safeLocalStorageGet('companies') || [];
+        
+        const companyIndex = companies.findIndex(c => c.id === companyId);
+        
+        if (companyIndex === -1) {
+          throw new Error('الشركة غير موجودة');
+        }
+        
+        // إنشاء مركبة جديدة
+        const newVehicle = {
+          id: Date.now().toString(),
+          licenseNumber,
+          licenseExpiry,
+          calibrationExpiry,
+          images: [...uploadedImages],
+          createdAt: new Date().toISOString()
+        };
+        
+        // إضافة المركبة للشركة
+        if (!companies[companyIndex].vehicles) {
+          companies[companyIndex].vehicles = [];
+        }
+        companies[companyIndex].vehicles.push(newVehicle);
+        
+        // محاولة تخزين البيانات
+        const storageSuccess = safeLocalStorageSet('companies', companies);
+        
+        if (!storageSuccess) {
+          // إذا فشل التخزين، نعرض خيارات بديلة
+          const userChoice = confirm('تعذر حفظ البيانات كاملة بسبب مساحة التخزين. هل تريد حفظ البيانات بدون الصور؟');
+          
+          if (userChoice) {
+            // حفظ نسخة بدون الصور
+            const simplifiedCompanies = {
+              ...companies,
+              companies: companies.map(company => ({
+                ...company,
+                vehicles: company.vehicles.map(vehicle => ({
+                  ...vehicle,
+                  images: []
+                }))
+              }))
+            };
+            
+            localStorage.setItem('companies', JSON.stringify(simplifiedCompanies));
+            showAlert('تم حفظ البيانات الأساسية بدون الصور', 'warning', 3000);
+          } else {
+            throw new Error('تم إلغاء الحفظ بسبب مشكلة في التخزين');
+          }
+        } else {
+          showAlert('تم إضافة المركبة بنجاح', 'success', 3000);
+        }
+        
+        setTimeout(() => {
+          window.location.href = `company.html?id=${companyId}`;
+        }, 1500);
+        
+      } catch (error) {
+        showAlert(error.message, 'error');
+        console.error('Error submitting form:', error);
       }
-      
-      const companies = JSON.parse(localStorage.getItem('companies')) || [];
-      const companyIndex = companies.findIndex(c => c.id === companyId);
-      
-      if (companyIndex === -1) {
-        alert('الشركة غير موجودة');
-        return;
-      }
-      
-      // إنشاء مركبة جديدة
-      const newVehicle = {
-        id: Date.now().toString(),
-        licenseNumber,
-        licenseExpiry,
-        calibrationExpiry,
-        images: [...uploadedImages]
-      };
-      
-      // إضافة المركبة للشركة
-      if (!companies[companyIndex].vehicles) {
-        companies[companyIndex].vehicles = [];
-      }
-      companies[companyIndex].vehicles.push(newVehicle);
-      localStorage.setItem('companies', JSON.stringify(companies));
-      
-      alert('تم إضافة المركبة بنجاح');
-      window.location.href = `company.html?id=${companyId}`;
     });
+    
+    // ==============================================
+    // أحداث إضافية
+    // ==============================================
     
     // إدخال أرقام فقط في حقول التاريخ مع السماح بشرطة مائلة
     document.getElementById('licenseExpiry').addEventListener('input', function() {
@@ -710,6 +1160,15 @@
     
     document.getElementById('calibrationExpiry').addEventListener('input', function() {
       this.value = this.value.replace(/[^0-9\/]/g, '');
+    });
+    
+    // تحذير عند مغادرة الصفحة مع وجود بيانات غير محفوظة
+    window.addEventListener('beforeunload', (e) => {
+      const licenseNumber = document.getElementById('licenseNumber').value.trim();
+      if (licenseNumber || uploadedImages.length > 0) {
+        e.preventDefault();
+        e.returnValue = 'لديك بيانات غير محفوظة. هل أنت متأكد أنك تريد المغادرة؟';
+      }
     });
   </script>
   
