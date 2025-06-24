@@ -7,21 +7,16 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     :root {
-      --primary-color: #4CAF50;
-      --primary-hover: #45a049;
-      --secondary-color: #2196F3;
-      --secondary-hover: #0b7dda;
-      --danger-color: #f44336;
-      --danger-hover: #d32f2f;
-      --warning-color: #ff9800;
-      --warning-hover: #e68a00;
-      --info-color: #17a2b8;
-      --info-hover: #138496;
-      --text-color: #333;
-      --light-bg: #f5f5f5;
-      --white: #fff;
-      --border-color: #ddd;
-      --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      --primary-color: #4361ee;
+      --secondary-color: #3f37c9;
+      --accent-color: #4895ef;
+      --light-color: #f8f9fa;
+      --dark-color: #212529;
+      --danger-color: #f72585;
+      --success-color: #4cc9f0;
+      --warning-color: #ff9e00;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       --transition: all 0.3s ease;
     }
     
@@ -33,18 +28,18 @@
     
     body {
       font-family: 'Tajawal', Arial, sans-serif;
-      background-color: var(--light-bg);
-      color: var(--text-color);
+      background-color: #f5f7ff;
+      color: var(--dark-color);
       line-height: 1.6;
-      padding: 15px;
+      padding: 20px;
     }
     
     .container {
       max-width: 800px;
       margin: 0 auto;
-      background: var(--white);
+      background: white;
       padding: 25px;
-      border-radius: 12px;
+      border-radius: var(--border-radius);
       box-shadow: var(--box-shadow);
     }
     
@@ -54,7 +49,7 @@
       margin-bottom: 25px;
       font-size: 1.8rem;
       padding-bottom: 15px;
-      border-bottom: 2px solid var(--primary-color);
+      border-bottom: 2px solid #eee;
     }
     
     h1 i {
@@ -69,14 +64,14 @@
       display: block;
       margin-bottom: 8px;
       font-weight: 600;
-      color: #555;
+      color: var(--dark-color);
     }
     
     input, select {
       width: 100%;
       padding: 12px 15px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
+      border: 1px solid #ddd;
+      border-radius: var(--border-radius);
       font-family: 'Tajawal', sans-serif;
       font-size: 1rem;
       transition: var(--transition);
@@ -84,8 +79,8 @@
     
     input:focus, select:focus {
       outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
     }
     
     .date-format-hint {
@@ -99,7 +94,7 @@
       color: white;
       border: none;
       padding: 12px 20px;
-      border-radius: 8px;
+      border-radius: var(--border-radius);
       font-size: 1rem;
       cursor: pointer;
       transition: var(--transition);
@@ -109,8 +104,7 @@
     }
     
     button:hover {
-      background: var(--primary-hover);
-      transform: translateY(-2px);
+      background: var(--secondary-color);
     }
     
     button i {
@@ -124,26 +118,6 @@
       margin-top: 20px;
     }
     
-    .back-btn {
-      display: block;
-      text-align: center;
-      margin-top: 15px;
-      color: var(--secondary-color);
-      text-decoration: none;
-      font-weight: 600;
-      padding: 10px;
-      border-radius: 8px;
-      transition: var(--transition);
-    }
-    
-    .back-btn:hover {
-      background-color: rgba(33, 150, 243, 0.1);
-    }
-    
-    .back-btn i {
-      margin-right: 5px;
-    }
-    
     /* تحميل الصور */
     .upload-section {
       margin: 25px 0;
@@ -154,20 +128,21 @@
       border: 2px dashed #ccc;
       padding: 20px;
       text-align: center;
-      border-radius: 8px;
+      border-radius: var(--border-radius);
       cursor: pointer;
       transition: var(--transition);
       margin-bottom: 15px;
+      position: relative;
     }
     
     .upload-btn:hover {
-      border-color: var(--primary-color);
-      background: rgba(76, 175, 80, 0.05);
+      border-color: var(--accent-color);
+      background: rgba(72, 149, 239, 0.05);
     }
     
     .upload-btn i {
       font-size: 2rem;
-      color: var(--primary-color);
+      color: var(--accent-color);
       margin-bottom: 10px;
       display: block;
     }
@@ -187,7 +162,7 @@
     
     .progress-bar {
       height: 10px;
-      background: var(--primary-color);
+      background: var(--success-color);
       width: 0%;
       transition: width 0.3s ease;
     }
@@ -198,23 +173,23 @@
       font-size: 0.9rem;
       display: none;
       padding: 10px;
-      border-radius: 8px;
+      border-radius: var(--border-radius);
     }
     
     .status-success {
-      background-color: rgba(76, 175, 80, 0.1);
-      color: var(--primary-color);
-      border: 1px solid var(--primary-color);
+      background-color: rgba(76, 201, 240, 0.1);
+      color: var(--success-color);
+      border: 1px solid var(--success-color);
     }
     
     .status-error {
-      background-color: rgba(244, 67, 54, 0.1);
+      background-color: rgba(247, 37, 133, 0.1);
       color: var(--danger-color);
       border: 1px solid var(--danger-color);
     }
     
     .status-warning {
-      background-color: rgba(255, 152, 0, 0.1);
+      background-color: rgba(255, 158, 0, 0.1);
       color: var(--warning-color);
       border: 1px solid var(--warning-color);
     }
@@ -232,7 +207,7 @@
       height: 100px;
       border-radius: 5px;
       overflow: hidden;
-      border: 1px solid var(--border-color);
+      border: 1px solid #eee;
       cursor: pointer;
     }
     
@@ -276,7 +251,7 @@
       text-align: center;
       padding: 15px;
       background: #f9f9f9;
-      border-radius: 8px;
+      border-radius: var(--border-radius);
       width: 100%;
     }
     
@@ -298,21 +273,7 @@
       transform: translateY(0);
     }
     
-    /* رسائل التنبيه */
-    .alert {
-      padding: 15px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      display: none;
-    }
-    
-    .alert-error {
-      background-color: rgba(244, 67, 54, 0.1);
-      color: var(--danger-color);
-      border: 1px solid var(--danger-color);
-    }
-    
-    /* معرض الصور */
+    /* نافذة عرض الصورة الكبيرة */
     .image-modal {
       display: none;
       position: fixed;
@@ -408,9 +369,28 @@
       border-radius: 20px;
     }
     
+    /* رسائل التنبيه */
+    .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: var(--border-radius);
+      display: none;
+    }
+    
+    .alert-error {
+      background-color: rgba(247, 37, 133, 0.1);
+      color: var(--danger-color);
+      border: 1px solid var(--danger-color);
+    }
+    
+    /* تحسينات للجوال */
     @media (max-width: 768px) {
       .container {
-        padding: 15px;
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 1.5rem;
       }
       
       .thumbnail {
@@ -422,6 +402,10 @@
         font-size: 20px;
         width: 40px;
         height: 40px;
+      }
+      
+      .image-modal-content img {
+        max-height: 70vh;
       }
     }
   </style>
@@ -457,8 +441,7 @@
         <div class="upload-btn" id="uploadBtn">
           <i class="fas fa-cloud-upload-alt"></i>
           <p>انقر لاختيار الصور أو اسحبها هنا</p>
-          <small>يمكنك تحميل أي عدد من الصور (JPEG, PNG, JPG)</small>
-          <small>الحجم الأقصى للصورة: 5MB</small>
+          <small>يمكنك تحميل أي عدد من الصور (JPEG, PNG, JPG, GIF, WEBP, SVG, HEIC, HEIF)</small>
         </div>
         
         <input type="file" id="fileInput" class="file-input" multiple accept="image/*">
@@ -477,10 +460,6 @@
       <button type="submit" class="btn-block">
         <i class="fas fa-save"></i> حفظ البيانات
       </button>
-      
-      <a href="#" id="backBtn" class="back-btn">
-        <i class="fas fa-arrow-right"></i> العودة بدون حفظ
-      </a>
     </form>
   </div>
 
@@ -496,124 +475,218 @@
   </div>
 
   <script>
-    // متغيرات عامة
-    let uploadedImages = [];
-    let currentImageIndex = 0;
-    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    // عناصر DOM
+    const uploadBtn = document.getElementById('uploadBtn');
+    const fileInput = document.getElementById('fileInput');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const thumbnailsContainer = document.getElementById('thumbnailsContainer');
+    const vehicleForm = document.getElementById('vehicleForm');
+    const globalAlert = document.getElementById('globalAlert');
     
-    // تحميل بيانات الشركة عند بدء الصفحة
-    document.addEventListener('DOMContentLoaded', function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const companyId = urlParams.get('companyId');
+    // عناصر نافذة الصورة الكبيرة
+    const imageModal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const closeModal = document.querySelector('.close-modal');
+    const nextImageBtn = document.getElementById('nextImage');
+    const prevImageBtn = document.getElementById('prevImage');
+    const imageCounter = document.getElementById('imageCounter');
+    
+    // متغيرات لعرض الصور
+    let currentImageIndex = 0;
+    let uploadedImages = [];
+    
+    // ==============================================
+    // وظائف مساعدة
+    // ==============================================
+    
+    // عرض رسالة خطأ
+    function showAlert(message, type = 'error', duration = 5000) {
+      globalAlert.textContent = message;
+      globalAlert.className = `alert alert-${type}`;
+      globalAlert.style.display = 'block';
       
-      if (!companyId) {
-        showAlert('خطأ في تحديد الشركة', 'error');
+      if (duration > 0) {
         setTimeout(() => {
-          window.location.href = 'index.html';
-        }, 2000);
-        return;
+          globalAlert.style.display = 'none';
+        }, duration);
+      }
+    }
+    
+    // إخفاء رسالة الخطأ
+    function hideAlert() {
+      globalAlert.style.display = 'none';
+    }
+    
+    // التحقق من نوع الملف
+    function isValidImageType(file) {
+      const validTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+        'image/svg+xml',
+        'image/heic',
+        'image/heif'
+      ];
+      
+      return validTypes.includes(file.type);
+    }
+    
+    // تدوير الصورة بناءً على بيانات EXIF
+    function rotateImageBasedOnExif(img, orientation) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      if ([5, 6, 7, 8].includes(orientation)) {
+        canvas.width = img.height;
+        canvas.height = img.width;
+      } else {
+        canvas.width = img.width;
+        canvas.height = img.height;
       }
       
-      // إعداد أحداث رفع الصور
-      setupImageUpload();
+      switch (orientation) {
+        case 2: ctx.transform(-1, 0, 0, 1, img.width, 0); break;
+        case 3: ctx.transform(-1, 0, 0, -1, img.width, img.height); break;
+        case 4: ctx.transform(1, 0, 0, -1, 0, img.height); break;
+        case 5: ctx.transform(0, 1, 1, 0, 0, 0); break;
+        case 6: ctx.transform(0, 1, -1, 0, img.height, 0); break;
+        case 7: ctx.transform(0, -1, -1, 0, img.height, img.width); break;
+        case 8: ctx.transform(0, -1, 1, 0, 0, img.width); break;
+        default: break;
+      }
       
-      // إعداد حدث العودة
-      document.getElementById('backBtn').addEventListener('click', function(e) {
-        e.preventDefault();
-        const companyId = new URLSearchParams(window.location.search).get('companyId');
-        if (companyId) {
-          window.location.href = `company.html?id=${companyId}`;
-        } else {
-          window.location.href = 'index.html';
+      ctx.drawImage(img, 0, 0);
+      return canvas.toDataURL('image/jpeg', 0.9);
+    }
+    
+    // قراءة بيانات EXIF للصورة
+    function getImageOrientation(file, callback) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        const view = new DataView(e.target.result);
+        
+        if (view.getUint16(0, false) !== 0xFFD8) {
+          return callback(-1);
         }
-      });
+        
+        const length = view.byteLength;
+        let offset = 2;
+        
+        while (offset < length) {
+          const marker = view.getUint16(offset, false);
+          offset += 2;
+          
+          if (marker === 0xFFE1) {
+            if (view.getUint32(offset += 2, false) !== 0x45786966) {
+              return callback(-1);
+            }
+            
+            const little = view.getUint16(offset += 6, false) === 0x4949;
+            offset += view.getUint32(offset + 4, little);
+            const tags = view.getUint16(offset, little);
+            offset += 2;
+            
+            for (let i = 0; i < tags; i++) {
+              if (view.getUint16(offset + (i * 12), little) === 0x0112) {
+                return callback(view.getUint16(offset + (i * 12) + 8, little));
+              }
+            }
+          } else if ((marker & 0xFF00) !== 0xFF00) {
+            break;
+          } else {
+            offset += view.getUint16(offset, false);
+          }
+        }
+        return callback(-1);
+      };
       
-      // إعداد حقول التاريخ للسماح بأرقام فقط
-      document.getElementById('licenseExpiry').addEventListener('input', function() {
-        this.value = this.value.replace(/[^0-9\/]/g, '');
-      });
-      
-      document.getElementById('calibrationExpiry').addEventListener('input', function() {
-        this.value = this.value.replace(/[^0-9\/]/g, '');
-      });
+      reader.readAsArrayBuffer(file.slice(0, 64 * 1024));
+    }
+    
+    // ==============================================
+    // أحداث تحميل الصور
+    // ==============================================
+    
+    uploadBtn.addEventListener('click', () => fileInput.click());
+    
+    uploadBtn.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadBtn.style.borderColor = 'var(--accent-color)';
+      uploadBtn.style.backgroundColor = 'rgba(72, 149, 239, 0.1)';
     });
     
-    // إعداد رفع الصور
-    function setupImageUpload() {
-      const uploadBtn = document.getElementById('uploadBtn');
-      const fileInput = document.getElementById('fileInput');
-      const progressContainer = document.getElementById('progressContainer');
-      const progressBar = document.getElementById('progressBar');
-      const uploadStatus = document.getElementById('uploadStatus');
-      const thumbnailsContainer = document.getElementById('thumbnailsContainer');
+    uploadBtn.addEventListener('dragleave', () => {
+      uploadBtn.style.borderColor = '#ccc';
+      uploadBtn.style.backgroundColor = '#f8f9fa';
+    });
+    
+    uploadBtn.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadBtn.style.borderColor = '#ccc';
+      uploadBtn.style.backgroundColor = '#f8f9fa';
       
-      uploadBtn.addEventListener('click', () => fileInput.click());
+      if (e.dataTransfer.files.length > 0) {
+        fileInput.files = e.dataTransfer.files;
+        handleFileUpload();
+      }
+    });
+    
+    fileInput.addEventListener('change', handleFileUpload);
+    
+    // ==============================================
+    // معالجة تحميل الملفات
+    // ==============================================
+    
+    function handleFileUpload() {
+      const files = fileInput.files;
+      if (!files || files.length === 0) return;
       
-      uploadBtn.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadBtn.style.borderColor = 'var(--primary-color)';
-        uploadBtn.style.backgroundColor = 'rgba(76, 175, 80, 0.1)';
-      });
+      // إعادة تعيين حالة التحميل
+      progressContainer.style.display = 'block';
+      progressBar.style.width = '0%';
+      uploadStatus.textContent = `جاري معالجة ${files.length} ملف...`;
+      uploadStatus.className = 'upload-status status-warning';
+      uploadStatus.style.display = 'block';
       
-      uploadBtn.addEventListener('dragleave', () => {
-        uploadBtn.style.borderColor = '#ccc';
-        uploadBtn.style.backgroundColor = '#f8f9fa';
-      });
+      if (thumbnailsContainer.querySelector('.no-images')) {
+        thumbnailsContainer.innerHTML = '';
+      }
       
-      uploadBtn.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadBtn.style.borderColor = '#ccc';
-        uploadBtn.style.backgroundColor = '#f8f9fa';
-        
-        if (e.dataTransfer.files.length > 0) {
-          fileInput.files = e.dataTransfer.files;
-          handleFileUpload();
+      let loadedCount = 0;
+      let validImages = 0;
+      let errorMessages = [];
+      
+      Array.from(files).forEach((file) => {
+        // التحقق من نوع الملف فقط (تم إزالة التحقق من الحجم)
+        if (!isValidImageType(file)) {
+          errorMessages.push(`الملف "${file.name}" ليس صورة مدعومة`);
+          loadedCount++;
+          updateProgress();
+          return;
         }
-      });
-      
-      fileInput.addEventListener('change', handleFileUpload);
-      
-      function handleFileUpload() {
-        const files = fileInput.files;
-        if (!files || files.length === 0) return;
         
-        // إعادة تعيين حالة التحميل
-        progressContainer.style.display = 'block';
-        progressBar.style.width = '0%';
-        uploadStatus.textContent = `جاري معالجة ${files.length} ملف...`;
-        uploadStatus.className = 'upload-status status-warning';
-        uploadStatus.style.display = 'block';
-        
-        if (thumbnailsContainer.querySelector('.no-images')) {
-          thumbnailsContainer.innerHTML = '';
-        }
-        
-        let loadedCount = 0;
-        let validImages = 0;
-        let errorMessages = [];
-        
-        Array.from(files).forEach((file) => {
-          // التحقق من نوع الملف
-          if (!file.type.match('image.*')) {
-            errorMessages.push(`الملف "${file.name}" ليس صورة مدعومة`);
-            loadedCount++;
-            updateProgress();
-            return;
-          }
-          
-          // التحقق من حجم الملف
-          if (file.size > MAX_FILE_SIZE) {
-            errorMessages.push(`الملف "${file.name}" حجمه كبير جداً (الحد الأقصى 5MB)`);
-            loadedCount++;
-            updateProgress();
-            return;
-          }
-          
+        // قراءة بيانات EXIF أولاً
+        getImageOrientation(file, (orientation) => {
           const reader = new FileReader();
           
           reader.onload = (e) => {
             const img = new Image();
             img.onload = function() {
+              let imageData = e.target.result;
+              
+              // إذا كانت الصورة تحتاج إلى تدوير
+              if (orientation && orientation > 1) {
+                try {
+                  imageData = rotateImageBasedOnExif(img, orientation);
+                } catch (error) {
+                  console.error('Error rotating image:', error);
+                }
+              }
+              
               loadedCount++;
               validImages++;
               
@@ -622,7 +695,8 @@
                 size: formatFileSize(file.size),
                 type: file.type,
                 dimensions: `${img.width} × ${img.height}`,
-                data: e.target.result
+                data: imageData,
+                originalFile: file
               });
               
               updateProgress();
@@ -645,36 +719,36 @@
           
           reader.readAsDataURL(file);
         });
+      });
+      
+      function updateProgress() {
+        const totalPercent = Math.round((loadedCount / files.length) * 100);
+        progressBar.style.width = `${totalPercent}%`;
         
-        function updateProgress() {
-          const totalPercent = Math.round((loadedCount / files.length) * 100);
-          progressBar.style.width = `${totalPercent}%`;
-          
-          if (loadedCount === files.length) {
-            setTimeout(() => {
-              progressContainer.style.display = 'none';
+        if (loadedCount === files.length) {
+          setTimeout(() => {
+            progressContainer.style.display = 'none';
+            
+            if (validImages > 0) {
+              uploadStatus.textContent = `تم تحميل ${validImages} صورة بنجاح`;
+              uploadStatus.className = 'upload-status status-success';
               
-              if (validImages > 0) {
-                uploadStatus.textContent = `تم تحميل ${validImages} صورة بنجاح`;
-                uploadStatus.className = 'upload-status status-success';
-                
-                if (errorMessages.length > 0) {
-                  uploadStatus.textContent += ` (مع ${errorMessages.length} أخطاء)`;
-                  showAlert(`تم تحميل ${validImages} صورة بنجاح، ولكن حدثت بعض الأخطاء:\n${errorMessages.join('\n')}`, 'warning');
-                }
-              } else {
-                uploadStatus.textContent = 'لم يتم تحميل أي صور صالحة';
-                uploadStatus.className = 'upload-status status-error';
-                showAlert(errorMessages.join('\n') || 'لم يتم تحميل أي صور صالحة', 'error');
+              if (errorMessages.length > 0) {
+                uploadStatus.textContent += ` (مع ${errorMessages.length} أخطاء)`;
+                showAlert(`تم تحميل ${validImages} صورة بنجاح، ولكن حدثت بعض الأخطاء:\n${errorMessages.join('\n')}`, 'warning');
               }
-              
-              setTimeout(() => {
-                uploadStatus.style.display = 'none';
-              }, 5000);
-              
-              renderThumbnails();
-            }, 500);
-          }
+            } else {
+              uploadStatus.textContent = 'لم يتم تحميل أي صور صالحة';
+              uploadStatus.className = 'upload-status status-error';
+              showAlert(errorMessages.join('\n') || 'لم يتم تحميل أي صور صالحة', 'error');
+            }
+            
+            setTimeout(() => {
+              uploadStatus.style.display = 'none';
+            }, 5000);
+            
+            renderThumbnails();
+          }, 500);
         }
       }
     }
@@ -688,13 +762,15 @@
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     }
     
+    // ==============================================
     // عرض الصور المصغرة
+    // ==============================================
+    
     function renderThumbnails() {
-      const container = document.getElementById('thumbnailsContainer');
-      container.innerHTML = '';
+      thumbnailsContainer.innerHTML = '';
       
       if (uploadedImages.length === 0) {
-        container.innerHTML = '<div class="no-images">لا توجد صور مرفوعة بعد</div>';
+        thumbnailsContainer.innerHTML = '<div class="no-images">لا توجد صور مرفوعة بعد</div>';
         return;
       }
       
@@ -709,83 +785,94 @@
             ${image.dimensions} | ${image.size}
           </div>
         `;
-        container.appendChild(thumbnail);
+        thumbnailsContainer.appendChild(thumbnail);
         
         // إضافة حدث النقر على الصورة المصغرة
         thumbnail.addEventListener('click', (e) => {
           if (e.target.classList.contains('delete-btn') || e.target.classList.contains('image-info')) return;
           openImageModal(index);
         });
-        
-        // إضافة حدث حذف الصورة
-        thumbnail.querySelector('.delete-btn').addEventListener('click', (e) => {
+      });
+      
+      // إضافة أحداث لحذف الصور
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
           e.stopPropagation();
-          const index = parseInt(e.target.getAttribute('data-index'));
+          const index = parseInt(btn.getAttribute('data-index'));
           uploadedImages.splice(index, 1);
           renderThumbnails();
           
           // إذا كانت الصورة المحذوفة معروضة في النافذة الكبيرة
-          if (document.getElementById('imageModal').style.display === 'flex' && currentImageIndex === index) {
+          if (imageModal.style.display === 'flex' && currentImageIndex === index) {
             closeImageModal();
           }
         });
       });
     }
     
-    // عرض رسالة خطأ
-    function showAlert(message, type = 'error', duration = 5000) {
-      const globalAlert = document.getElementById('globalAlert');
-      globalAlert.textContent = message;
-      globalAlert.className = `alert alert-${type}`;
-      globalAlert.style.display = 'block';
-      
-      if (duration > 0) {
-        setTimeout(() => {
-          globalAlert.style.display = 'none';
-        }, duration);
-      }
-    }
+    // ==============================================
+    // نافذة عرض الصورة الكبيرة
+    // ==============================================
     
-    // إخفاء رسالة الخطأ
-    function hideAlert() {
-      document.getElementById('globalAlert').style.display = 'none';
-    }
-    
-    // فتح نافذة عرض الصورة الكبيرة
     function openImageModal(index) {
       currentImageIndex = index;
-      document.getElementById('modalImage').src = uploadedImages[index].data;
-      document.getElementById('imageModal').style.display = 'flex';
+      modalImage.src = uploadedImages[index].data;
+      imageModal.style.display = 'flex';
       document.body.style.overflow = 'hidden';
       updateImageCounter();
     }
     
-    // إغلاق نافذة عرض الصورة الكبيرة
     function closeImageModal() {
-      document.getElementById('imageModal').style.display = 'none';
+      imageModal.style.display = 'none';
       document.body.style.overflow = 'auto';
     }
     
-    // عرض الصورة التالية
     function showNextImage() {
       if (uploadedImages.length <= 1) return;
       currentImageIndex = (currentImageIndex + 1) % uploadedImages.length;
-      document.getElementById('modalImage').src = uploadedImages[currentImageIndex].data;
+      modalImage.src = uploadedImages[currentImageIndex].data;
       updateImageCounter();
     }
     
-    // عرض الصورة السابقة
     function showPrevImage() {
       if (uploadedImages.length <= 1) return;
       currentImageIndex = (currentImageIndex - 1 + uploadedImages.length) % uploadedImages.length;
-      document.getElementById('modalImage').src = uploadedImages[currentImageIndex].data;
+      modalImage.src = uploadedImages[currentImageIndex].data;
       updateImageCounter();
     }
     
-    // تحديث عداد الصور
     function updateImageCounter() {
-      document.getElementById('imageCounter').textContent = `${currentImageIndex + 1} / ${uploadedImages.length}`;
+      imageCounter.textContent = `${currentImageIndex + 1} / ${uploadedImages.length}`;
     }
+    
+    // أحداث نافذة الصورة الكبيرة
+    closeModal.addEventListener('click', closeImageModal);
+    nextImageBtn.addEventListener('click', showNextImage);
+    prevImageBtn.addEventListener('click', showPrevImage);
+    
+    // إغلاق النافذة عند النقر خارج الصورة
+    imageModal.addEventListener('click', (e) => {
+      if (e.target === imageModal) {
+        closeImageModal();
+      }
+    });
+    
+    // التنقل بين الصور باستخدام لوحة المفاتيح
+    document.addEventListener('keydown', (e) => {
+      if (imageModal.style.display === 'flex') {
+        if (e.key === 'Escape') {
+          closeImageModal();
+        } else if (e.key === 'ArrowRight') {
+          showNextImage();
+        } else if (e.key === 'ArrowLeft') {
+          showPrevImage();
+        }
+      }
+    });
+    
+    // ==============================================
+    // معالجة النموذج
+    // ==============================================
     
     // تحويل التاريخ المدخل إلى صيغة YYYY-MM-DD مع التحقق من الصحة
     function parseDateInput(dateStr) {
@@ -826,7 +913,7 @@
     }
     
     // إرسال النموذج
-    document.getElementById('vehicleForm').addEventListener('submit', function(e) {
+    vehicleForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       hideAlert();
       
@@ -879,8 +966,7 @@
           licenseExpiry,
           calibrationExpiry,
           images: [...uploadedImages],
-          createdAt: new Date().toISOString(),
-          notes: []
+          createdAt: new Date().toISOString()
         };
         
         // إضافة المركبة للشركة
@@ -901,33 +987,21 @@
       }
     });
     
-    // إعداد أحداث نافذة الصورة الكبيرة
-    document.querySelector('.close-modal').addEventListener('click', closeImageModal);
-    document.getElementById('nextImage').addEventListener('click', showNextImage);
-    document.getElementById('prevImage').addEventListener('click', showPrevImage);
+    // ==============================================
+    // أحداث إضافية
+    // ==============================================
     
-    // إغلاق النافذة عند النقر خارج الصورة
-    document.getElementById('imageModal').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeImageModal();
-      }
+    // إدخال أرقام فقط في حقول التاريخ مع السماح بشرطة مائلة
+    document.getElementById('licenseExpiry').addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9\/]/g, '');
     });
     
-    // التنقل بين الصور باستخدام لوحة المفاتيح
-    document.addEventListener('keydown', function(e) {
-      if (document.getElementById('imageModal').style.display === 'flex') {
-        if (e.key === 'Escape') {
-          closeImageModal();
-        } else if (e.key === 'ArrowRight') {
-          showNextImage();
-        } else if (e.key === 'ArrowLeft') {
-          showPrevImage();
-        }
-      }
+    document.getElementById('calibrationExpiry').addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9\/]/g, '');
     });
     
     // تحذير عند مغادرة الصفحة مع وجود بيانات غير محفوظة
-    window.addEventListener('beforeunload', function(e) {
+    window.addEventListener('beforeunload', (e) => {
       const licenseNumber = document.getElementById('licenseNumber').value.trim();
       if (licenseNumber || uploadedImages.length > 0) {
         e.preventDefault();
