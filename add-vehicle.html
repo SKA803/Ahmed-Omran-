@@ -56,6 +56,18 @@
       margin-left: 10px;
     }
     
+    .storage-warning {
+      background-color: #fff3cd;
+      color: #856404;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
+      border: 1px solid #ffeeba;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
     .form-group {
       margin-bottom: 20px;
     }
@@ -414,6 +426,10 @@
   <div class="container">
     <h1><i class="fas fa-car"></i> إضافة مركبة جديدة</h1>
     
+    <div id="storageWarning" class="storage-warning">
+      <i class="fas fa-exclamation-triangle"></i> ملاحظة: يتم تخزين الصور في قاعدة بيانات المتصفح وقد تختلف السعة حسب الجهاز.
+    </div>
+    
     <!-- رسالة الخطأ العامة -->
     <div id="globalAlert" class="alert alert-error"></div>
     
@@ -484,6 +500,7 @@
     const thumbnailsContainer = document.getElementById('thumbnailsContainer');
     const vehicleForm = document.getElementById('vehicleForm');
     const globalAlert = document.getElementById('globalAlert');
+    const storageWarning = document.getElementById('storageWarning');
     
     // عناصر نافذة الصورة الكبيرة
     const imageModal = document.getElementById('imageModal');
@@ -496,6 +513,104 @@
     // متغيرات لعرض الصور
     let currentImageIndex = 0;
     let uploadedImages = [];
+    
+    // متغيرات IndexedDB
+    let db;
+    const DB_NAME = 'VehicleManagementDB';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'companies';
+    
+    // عرض رسالة تحذير التخزين
+    storageWarning.style.display = 'flex';
+    
+    // ==============================================
+    // وظائف IndexedDB
+    // ==============================================
+    
+    // فتح أو إنشاء قاعدة البيانات
+    function openDatabase() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        
+        request.onerror = (event) => {
+          console.error('فشل فتح قاعدة البيانات:', event.target.error);
+          reject(event.target.error);
+        };
+        
+        request.onsuccess = (event) => {
+          db = event.target.result;
+          resolve(db);
+        };
+        
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+          }
+        };
+      });
+    }
+    
+    // حفظ الشركات في IndexedDB
+    async function saveCompanies(companies) {
+      try {
+        await openDatabase();
+        
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([STORE_NAME], 'readwrite');
+          const store = transaction.objectStore(STORE_NAME);
+          
+          // حذف البيانات القديمة أولاً
+          const clearRequest = store.clear();
+          
+          clearRequest.onsuccess = () => {
+            // إضافة الشركات الجديدة
+            companies.forEach(company => {
+              store.put(company);
+            });
+            
+            transaction.oncomplete = () => {
+              resolve();
+            };
+            
+            transaction.onerror = (event) => {
+              reject(event.target.error);
+            };
+          };
+          
+          clearRequest.onerror = (event) => {
+            reject(event.target.error);
+          };
+        });
+      } catch (error) {
+        console.error('Error saving companies:', error);
+        throw error;
+      }
+    }
+    
+    // جلب الشركات من IndexedDB
+    async function getCompanies() {
+      try {
+        await openDatabase();
+        
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([STORE_NAME], 'readonly');
+          const store = transaction.objectStore(STORE_NAME);
+          const request = store.getAll();
+          
+          request.onsuccess = (event) => {
+            resolve(event.target.result || []);
+          };
+          
+          request.onerror = (event) => {
+            reject(event.target.error);
+          };
+        });
+      } catch (error) {
+        console.error('Error getting companies:', error);
+        throw error;
+      }
+    }
     
     // ==============================================
     // وظائف مساعدة
@@ -946,13 +1061,10 @@
           }
         }
         
-        // التحقق من وجود صور مرفوعة
-        if (uploadedImages.length === 0) {
-          const confirmUpload = confirm('لم تقم برفع أي صور للرخصة. هل تريد المتابعة دون رفع الصور؟');
-          if (!confirmUpload) return;
-        }
+        // جلب الشركات الحالية من IndexedDB
+        let companies = await getCompanies();
         
-        const companies = JSON.parse(localStorage.getItem('companies')) || [];
+        // البحث عن الشركة المحددة
         const companyIndex = companies.findIndex(c => c.id === companyId);
         
         if (companyIndex === -1) {
@@ -965,7 +1077,7 @@
           licenseNumber,
           licenseExpiry,
           calibrationExpiry,
-          images: [...uploadedImages],
+          images: uploadedImages,
           createdAt: new Date().toISOString()
         };
         
@@ -974,7 +1086,9 @@
           companies[companyIndex].vehicles = [];
         }
         companies[companyIndex].vehicles.push(newVehicle);
-        localStorage.setItem('companies', JSON.stringify(companies));
+        
+        // حفظ الشركات في IndexedDB
+        await saveCompanies(companies);
         
         showAlert('تم إضافة المركبة بنجاح', 'success', 3000);
         setTimeout(() => {
