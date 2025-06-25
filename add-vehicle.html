@@ -513,6 +513,7 @@
     // متغيرات لعرض الصور
     let currentImageIndex = 0;
     let uploadedImages = [];
+    let currentCompany = null;
     
     // متغيرات IndexedDB
     let db;
@@ -522,6 +523,40 @@
     
     // عرض رسالة تحذير التخزين
     storageWarning.style.display = 'flex';
+    
+    // ==============================================
+    // تهيئة الصفحة
+    // ==============================================
+    
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        // جلب معرف الشركة من URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const companyId = urlParams.get('companyId');
+        
+        if (!companyId) {
+          throw new Error('لم يتم تحديد شركة');
+        }
+        
+        // جلب بيانات الشركة من IndexedDB
+        await openDatabase();
+        const companies = await getCompanies();
+        currentCompany = companies.find(c => c.id === companyId);
+        
+        if (!currentCompany) {
+          throw new Error('الشركة غير موجودة');
+        }
+        
+        // تهيئة بيانات الشركة إذا لم تكن موجودة
+        if (!currentCompany.vehicles) {
+          currentCompany.vehicles = [];
+        }
+        
+      } catch (error) {
+        showAlert(error.message, 'error');
+        console.error('Error initializing page:', error);
+      }
+    });
     
     // ==============================================
     // وظائف IndexedDB
@@ -1033,12 +1068,8 @@
       hideAlert();
       
       try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const companyId = urlParams.get('companyId');
-        
-        if (!companyId) {
-          throw new Error('خطأ في تحديد الشركة');
-        }
+        // جلب جميع الشركات من IndexedDB
+        const companies = await getCompanies();
         
         const licenseNumber = document.getElementById('licenseNumber').value.trim();
         const licenseExpiryInput = document.getElementById('licenseExpiry').value.trim();
@@ -1061,14 +1092,10 @@
           }
         }
         
-        // جلب الشركات الحالية من IndexedDB
-        let companies = await getCompanies();
-        
-        // البحث عن الشركة المحددة
-        const companyIndex = companies.findIndex(c => c.id === companyId);
-        
-        if (companyIndex === -1) {
-          throw new Error('الشركة غير موجودة');
+        // التحقق من وجود صور مرفوعة
+        if (uploadedImages.length === 0) {
+          const confirmUpload = confirm('لم تقم برفع أي صور للرخصة. هل تريد المتابعة دون رفع الصور؟');
+          if (!confirmUpload) return;
         }
         
         // إنشاء مركبة جديدة
@@ -1081,18 +1108,23 @@
           createdAt: new Date().toISOString()
         };
         
-        // إضافة المركبة للشركة
-        if (!companies[companyIndex].vehicles) {
-          companies[companyIndex].vehicles = [];
+        // إضافة المركبة للشركة الحالية
+        currentCompany.vehicles.push(newVehicle);
+        
+        // تحديث الشركة في مصفوفة الشركات
+        const companyIndex = companies.findIndex(c => c.id === currentCompany.id);
+        if (companyIndex !== -1) {
+          companies[companyIndex] = currentCompany;
+        } else {
+          companies.push(currentCompany);
         }
-        companies[companyIndex].vehicles.push(newVehicle);
         
         // حفظ الشركات في IndexedDB
         await saveCompanies(companies);
         
         showAlert('تم إضافة المركبة بنجاح', 'success', 3000);
         setTimeout(() => {
-          window.location.href = `company.html?id=${companyId}`;
+          window.location.href = `company.html?id=${currentCompany.id}`;
         }, 1500);
         
       } catch (error) {
