@@ -42,7 +42,7 @@
     .container {
       max-width: 1000px;
       margin: 0 auto;
-      background: var(--white);
+      background: white;
       padding: 25px;
       border-radius: 12px;
       box-shadow: var(--box-shadow);
@@ -451,8 +451,86 @@
     let vehicleImages = [];
     let currentGalleryIndex = 0;
 
+    // متغيرات قاعدة البيانات
+    const DB_NAME = 'VehicleManagementDB';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'companies';
+    let db;
+
+    // فتح قاعدة البيانات
+    function openDatabase() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        
+        request.onerror = (event) => {
+          console.error('فشل فتح قاعدة البيانات:', event.target.error);
+          reject(event.target.error);
+        };
+        
+        request.onsuccess = (event) => {
+          db = event.target.result;
+          resolve(db);
+        };
+        
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+          }
+        };
+      });
+    }
+
+    // جلب بيانات الشركة
+    async function getCompany(companyId) {
+      try {
+        await openDatabase();
+        
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([STORE_NAME], 'readonly');
+          const store = transaction.objectStore(STORE_NAME);
+          const request = store.get(companyId);
+          
+          request.onsuccess = (event) => {
+            resolve(event.target.result);
+          };
+          
+          request.onerror = (event) => {
+            reject(event.target.error);
+          };
+        });
+      } catch (error) {
+        console.error('Error getting company:', error);
+        throw error;
+      }
+    }
+
+    // تحديث بيانات الشركة
+    async function updateCompany(company) {
+      try {
+        await openDatabase();
+        
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction([STORE_NAME], 'readwrite');
+          const store = transaction.objectStore(STORE_NAME);
+          const request = store.put(company);
+          
+          request.onsuccess = () => {
+            resolve();
+          };
+          
+          request.onerror = (event) => {
+            reject(event.target.error);
+          };
+        });
+      } catch (error) {
+        console.error('Error updating company:', error);
+        throw error;
+      }
+    }
+
     // دالة تحميل البيانات
-    const loadVehicleData = () => {
+    const loadVehicleData = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const vehicleId = urlParams.get('id');
       const companyId = urlParams.get('companyId');
@@ -462,27 +540,32 @@
         return;
       }
       
-      const companies = JSON.parse(localStorage.getItem('companies')) || [];
-      currentCompany = companies.find(c => c.id === companyId);
-      
-      if (!currentCompany) {
+      try {
+        currentCompany = await getCompany(companyId);
+        
+        if (!currentCompany) {
+          window.location.href = 'index.html';
+          return;
+        }
+        
+        currentVehicle = currentCompany.vehicles.find(v => v.id === vehicleId);
+        
+        if (!currentVehicle) {
+          window.location.href = 'index.html';
+          return;
+        }
+        
+        // تهيئة الملاحظات إذا لم تكن موجودة
+        if (!currentVehicle.notes) {
+          currentVehicle.notes = [];
+        }
+        
+        renderVehicleData();
+      } catch (error) {
+        console.error('Error loading vehicle data:', error);
+        alert('حدث خطأ أثناء تحميل بيانات المركبة');
         window.location.href = 'index.html';
-        return;
       }
-      
-      currentVehicle = currentCompany.vehicles.find(v => v.id === vehicleId);
-      
-      if (!currentVehicle) {
-        window.location.href = 'index.html';
-        return;
-      }
-      
-      // تهيئة الملاحظات إذا لم تكن موجودة
-      if (!currentVehicle.notes) {
-        currentVehicle.notes = [];
-      }
-      
-      renderVehicleData();
     };
 
     // دالة عرض البيانات
@@ -605,42 +688,47 @@
         window.location.href = `edit-vehicle.html?id=${currentVehicle.id}&companyId=${currentCompany.id}&t=${Date.now()}`;
       });
       
-      document.getElementById('deleteBtn').addEventListener('click', () => {
+      document.getElementById('deleteBtn').addEventListener('click', async () => {
         if (confirm('هل أنت متأكد من حذف هذه المركبة؟')) {
-          deleteVehicle();
+          await deleteVehicle();
         }
       });
       
-      document.getElementById('addNoteBtn').addEventListener('click', () => {
-        addNewNote();
+      document.getElementById('addNoteBtn').addEventListener('click', async () => {
+        await addNewNote();
       });
       
       // أحداث حذف الملاحظات
       document.querySelectorAll('.delete-note-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
+        btn.addEventListener('click', async (e) => {
           const noteIndex = e.target.closest('.delete-note-btn').dataset.noteIndex;
           if (confirm('هل أنت متأكد من حذف هذه الملاحظة؟')) {
-            deleteNote(noteIndex);
+            await deleteNote(noteIndex);
           }
         });
       });
     };
 
     // دالة حذف المركبة
-    const deleteVehicle = () => {
-      const companies = JSON.parse(localStorage.getItem('companies')) || [];
-      const companyIndex = companies.findIndex(c => c.id === currentCompany.id);
-      const vehicleIndex = companies[companyIndex].vehicles.findIndex(v => v.id === currentVehicle.id);
-      
-      companies[companyIndex].vehicles.splice(vehicleIndex, 1);
-      localStorage.setItem('companies', JSON.stringify(companies));
-      
-      alert('تم حذف المركبة بنجاح');
-      window.location.href = `company.html?id=${currentCompany.id}`;
+    const deleteVehicle = async () => {
+      try {
+        // إزالة المركبة من الشركة
+        const companyIndex = currentCompany.vehicles.findIndex(v => v.id === currentVehicle.id);
+        if (companyIndex !== -1) {
+          currentCompany.vehicles.splice(companyIndex, 1);
+          await updateCompany(currentCompany);
+          
+          alert('تم حذف المركبة بنجاح');
+          window.location.href = `company.html?id=${currentCompany.id}`;
+        }
+      } catch (error) {
+        console.error('Error deleting vehicle:', error);
+        alert('حدث خطأ أثناء حذف المركبة');
+      }
     };
 
     // دالة إضافة ملاحظة جديدة
-    const addNewNote = () => {
+    const addNewNote = async () => {
       const noteText = prompt('أدخل الملاحظة الجديدة:');
       if (noteText && noteText.trim() !== '') {
         const newNote = {
@@ -649,26 +737,31 @@
         };
         
         currentVehicle.notes.unshift(newNote);
-        saveVehicleData();
+        await saveVehicleData();
         renderVehicleData();
       }
     };
 
     // دالة حذف ملاحظة
-    const deleteNote = (noteIndex) => {
+    const deleteNote = async (noteIndex) => {
       currentVehicle.notes.splice(noteIndex, 1);
-      saveVehicleData();
+      await saveVehicleData();
       renderVehicleData();
     };
 
     // دالة حفظ بيانات المركبة
-    const saveVehicleData = () => {
-      const companies = JSON.parse(localStorage.getItem('companies')) || [];
-      const companyIndex = companies.findIndex(c => c.id === currentCompany.id);
-      const vehicleIndex = companies[companyIndex].vehicles.findIndex(v => v.id === currentVehicle.id);
-      
-      companies[companyIndex].vehicles[vehicleIndex] = currentVehicle;
-      localStorage.setItem('companies', JSON.stringify(companies));
+    const saveVehicleData = async () => {
+      try {
+        // تحديث المركبة في الشركة
+        const vehicleIndex = currentCompany.vehicles.findIndex(v => v.id === currentVehicle.id);
+        if (vehicleIndex !== -1) {
+          currentCompany.vehicles[vehicleIndex] = currentVehicle;
+          await updateCompany(currentCompany);
+        }
+      } catch (error) {
+        console.error('Error saving vehicle data:', error);
+        throw error;
+      }
     };
 
     // دالة فتح المعرض
