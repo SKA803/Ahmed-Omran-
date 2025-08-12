@@ -431,6 +431,53 @@
       color: #2c3e50;
     }
     
+    /* أزرار التصدير والاستيراد */
+    .export-import-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .export-btn {
+      padding: 8px 15px;
+      background-color: var(--light-bg);
+      color: var(--success-color);
+      border: 1px solid var(--success-color);
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+    }
+    
+    .export-btn:hover {
+      background-color: var(--success-color);
+      color: white;
+    }
+    
+    .import-btn {
+      padding: 8px 15px;
+      background-color: var(--light-bg);
+      color: var(--secondary-color);
+      border: 1px solid var(--secondary-color);
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+    }
+    
+    .import-btn:hover {
+      background-color: var(--secondary-color);
+      color: white;
+    }
+    
     @media (max-width: 768px) {
       .container {
         padding: 15px;
@@ -464,6 +511,10 @@
         min-width: auto;
         padding: 3px 8px;
       }
+      
+      .export-import-buttons {
+        flex-direction: column;
+      }
     }
     
     @media (max-width: 480px) {
@@ -486,6 +537,30 @@
 <body>
   <div class="container" id="companyContainer">
     <!-- سيتم ملء هذه الصفحة بالبيانات من localStorage -->
+  </div>
+
+  <!-- نموذج استيراد بيانات -->
+  <div class="import-modal" id="importModal">
+    <div class="import-modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-file-import"></i> استيراد بيانات المركبات</h3>
+        <button class="close-btn" id="closeImportModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="importFile">اختر ملف JSON للاستيراد</label>
+          <input type="file" id="importFile" accept=".json">
+        </div>
+        <div class="form-group">
+          <input type="checkbox" id="mergeData" checked>
+          <label for="mergeData">دمج البيانات مع البيانات الحالية (بدون هذا الخيار سيتم استبدال جميع المركبات)</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelImportBtn">إلغاء</button>
+        <button class="btn btn-primary" id="confirmImportBtn">استيراد</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -536,6 +611,26 @@
           }
         }
       });
+      
+      // إعداد حدث لتصدير المركبات
+      document.addEventListener('click', function(e) {
+        if (e.target && (e.target.id === 'exportVehiclesBtn' || e.target.closest('#exportVehiclesBtn'))) {
+          const companyId = new URLSearchParams(window.location.search).get('id');
+          exportCompanyVehicles(companyId);
+        }
+      });
+      
+      // إعداد حدث لاستيراد المركبات
+      document.addEventListener('click', function(e) {
+        if (e.target && (e.target.id === 'importVehiclesBtn' || e.target.closest('#importVehiclesBtn'))) {
+          document.getElementById('importModal').style.display = 'flex';
+        }
+      });
+      
+      // إعداد أحداث نموذج الاستيراد
+      document.getElementById('closeImportModalBtn').addEventListener('click', closeImportModal);
+      document.getElementById('cancelImportBtn').addEventListener('click', closeImportModal);
+      document.getElementById('confirmImportBtn').addEventListener('click', importVehicles);
     });
     
     function loadCompanyData() {
@@ -618,6 +713,15 @@
           </h1>
           <button class="back-btn">
             <i class="fas fa-arrow-right"></i> العودة للقائمة
+          </button>
+        </div>
+        
+        <div class="export-import-buttons">
+          <button id="exportVehiclesBtn" class="export-btn">
+            <i class="fas fa-file-export"></i> تصدير المركبات
+          </button>
+          <button id="importVehiclesBtn" class="import-btn">
+            <i class="fas fa-file-import"></i> استيراد مركبات
           </button>
         </div>
         
@@ -839,9 +943,117 @@
       return new Date(dateString).toLocaleDateString('ar-EG', options);
     }
     
+    // دالة تصدير مركبات الشركة
+    function exportCompanyVehicles(companyId) {
+      const companies = JSON.parse(localStorage.getItem('companies')) || [];
+      const company = companies.find(c => c.id === companyId);
+      
+      if (!company) {
+        alert('الشركة غير موجودة');
+        return;
+      }
+      
+      const data = {
+        version: '1.0',
+        exportedAt: new Date().toISOString(),
+        companyId: company.id,
+        companyName: company.name,
+        vehicles: company.vehicles || []
+      };
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `مركبات_${company.name}_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      alert(`تم تصدير ${data.vehicles.length} مركبة بنجاح`);
+    }
+    
+    // دالة استيراد مركبات الشركة
+    function importVehicles() {
+      const fileInput = document.getElementById('importFile');
+      const file = fileInput.files[0];
+      const mergeData = document.getElementById('mergeData').checked;
+      const companyId = new URLSearchParams(window.location.search).get('id');
+      
+      if (!file) {
+        alert('الرجاء اختيار ملف للاستيراد');
+        return;
+      }
+      
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        try {
+          const importedData = JSON.parse(e.target.result);
+          
+          // التحقق من صحة البيانات المستوردة
+          if (!importedData.vehicles || !Array.isArray(importedData.vehicles)) {
+            throw new Error('صيغة الملف غير صالحة');
+          }
+          
+          const companies = JSON.parse(localStorage.getItem('companies')) || [];
+          const companyIndex = companies.findIndex(c => c.id === companyId);
+          
+          if (companyIndex === -1) {
+            throw new Error('الشركة غير موجودة');
+          }
+          
+          if (mergeData) {
+            // دمج المركبات مع الحالية
+            importedData.vehicles.forEach(vehicle => {
+              const existingIndex = companies[companyIndex].vehicles.findIndex(v => v.id === vehicle.id);
+              
+              if (existingIndex >= 0) {
+                // تحديث المركبة الموجودة
+                companies[companyIndex].vehicles[existingIndex] = vehicle;
+              } else {
+                // إضافة مركبة جديدة
+                companies[companyIndex].vehicles.push(vehicle);
+              }
+            });
+          } else {
+            // استبدال جميع المركبات
+            companies[companyIndex].vehicles = importedData.vehicles;
+          }
+          
+          localStorage.setItem('companies', JSON.stringify(companies));
+          
+          closeImportModal();
+          
+          // إعادة تحميل الصفحة لعرض التغييرات
+          window.location.reload();
+          
+          // عرض رسالة نجاح
+          alert(`تم استيراد ${importedData.vehicles.length} مركبة بنجاح`);
+        } catch (error) {
+          alert(`خطأ في استيراد البيانات: ${error.message}`);
+        }
+      };
+      
+      reader.onerror = function() {
+        alert('حدث خطأ أثناء قراءة الملف');
+      };
+      
+      reader.readAsText(file);
+    }
+    
+    function closeImportModal() {
+      document.getElementById('importModal').style.display = 'none';
+      document.getElementById('importFile').value = '';
+    }
+    
     // جعل الدوال متاحة عالمياً
     window.filterVehicles = filterVehicles;
     window.searchVehicles = searchVehicles;
   </script>
+  
+  <!-- خط عربي -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 </body>
 </html>
