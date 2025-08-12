@@ -77,6 +77,19 @@
       border-radius: 2px;
     }
     
+    .action-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .action-buttons button {
+      flex: 1;
+      min-width: 150px;
+    }
+    
     .company-list {
       margin-top: 30px;
     }
@@ -217,6 +230,30 @@
       font-size: 0.9rem;
     }
     
+    .export-btn {
+      padding: 8px 15px;
+      background-color: var(--light-color);
+      color: var(--success-color);
+      border: 1px solid var(--success-color);
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+    }
+    
+    .export-btn:hover {
+      background-color: var(--success-color);
+      color: white;
+    }
+    
+    .export-btn i {
+      margin-right: 5px;
+      font-size: 0.9rem;
+    }
+    
     .empty-state {
       text-align: center;
       padding: 40px 20px;
@@ -337,6 +374,11 @@
       color: #333;
     }
     
+    .btn-success {
+      background-color: var(--success-color);
+      color: white;
+    }
+    
     @keyframes slideDown {
       from {
         transform: translateY(-50px);
@@ -346,6 +388,30 @@
         transform: translateY(0);
         opacity: 1;
       }
+    }
+    
+    /* نموذج استيراد بيانات */
+    .import-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .import-modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: var(--border-radius);
+      width: 90%;
+      max-width: 500px;
+      box-shadow: var(--box-shadow);
+      animation: slideDown 0.3s ease-out;
     }
     
     @media (max-width: 768px) {
@@ -367,6 +433,10 @@
         width: 100%;
         margin-top: 10px;
         justify-content: flex-end;
+      }
+      
+      .action-buttons button {
+        width: 100%;
       }
     }
     
@@ -394,7 +464,7 @@
         gap: 8px;
       }
       
-      .view-btn, .edit-btn, .delete-btn {
+      .view-btn, .edit-btn, .delete-btn, .export-btn {
         padding: 6px 12px;
         font-size: 0.8rem;
       }
@@ -404,6 +474,15 @@
 <body>
   <div class="container">
     <h1><i class="fas fa-car"></i> نظام إدارة سجلات المركبات</h1>
+    
+    <div class="action-buttons">
+      <button id="exportAllBtn" class="btn btn-success">
+        <i class="fas fa-file-export"></i> تصدير كل الشركات
+      </button>
+      <button id="importBtn" class="btn btn-primary">
+        <i class="fas fa-file-import"></i> استيراد بيانات
+      </button>
+    </div>
     
     <div class="company-list" id="companyList">
       <!-- سيتم ملء هذه القائمة بالشركات من localStorage -->
@@ -459,6 +538,30 @@
     </div>
   </div>
 
+  <!-- نموذج استيراد بيانات -->
+  <div class="import-modal" id="importModal">
+    <div class="import-modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-file-import"></i> استيراد بيانات</h3>
+        <button class="close-btn" id="closeImportModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="importFile">اختر ملف JSON للاستيراد</label>
+          <input type="file" id="importFile" accept=".json">
+        </div>
+        <div class="form-group">
+          <input type="checkbox" id="mergeData" checked>
+          <label for="mergeData">دمج البيانات مع البيانات الحالية (بدون هذا الخيار سيتم استبدال جميع البيانات)</label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelImportBtn">إلغاء</button>
+        <button class="btn btn-primary" id="confirmImportBtn">استيراد</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // دالة لتحديث عرض قائمة الشركات
     function updateCompaniesList() {
@@ -488,6 +591,9 @@
             <a href="company.html?id=${company.id}" class="view-btn">
               <i class="fas fa-eye"></i> عرض
             </a>
+            <button class="export-btn" data-id="${company.id}">
+              <i class="fas fa-file-export"></i> تصدير
+            </button>
             <button class="edit-btn" data-id="${company.id}">
               <i class="fas fa-edit"></i> تعديل
             </button>
@@ -499,7 +605,7 @@
         companyList.appendChild(card);
       });
 
-      // إضافة مستمعي الأحداث لأزرار التعديل والحذف
+      // إضافة مستمعي الأحداث لأزرار التعديل والحذف والتصدير
       document.querySelectorAll('.edit-btn').forEach(btn => {
         btn.addEventListener('click', function() {
           const companyId = this.getAttribute('data-id');
@@ -513,6 +619,13 @@
           deleteCompany(companyId);
         });
       });
+      
+      document.querySelectorAll('.export-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const companyId = this.getAttribute('data-id');
+          exportCompany(companyId);
+        });
+      });
     }
 
     // تحميل قائمة الشركات عند فتح الصفحة
@@ -524,6 +637,10 @@
       
       // تحديث قائمة الشركات
       updateCompaniesList();
+      
+      // إضافة مستمعي الأحداث لأزرار التصدير والاستيراد
+      document.getElementById('exportAllBtn').addEventListener('click', exportAllCompanies);
+      document.getElementById('importBtn').addEventListener('click', openImportModal);
     });
     
     // إدارة نموذج إضافة شركة
@@ -666,6 +783,155 @@
       // عرض رسالة نجاح
       alert('تم حذف الشركة بنجاح');
     }
+    
+    // دالة تصدير شركة معينة
+    function exportCompany(companyId) {
+      const companies = JSON.parse(localStorage.getItem('companies')) || [];
+      const company = companies.find(c => c.id === companyId);
+      
+      if (!company) {
+        alert('الشركة غير موجودة');
+        return;
+      }
+      
+      const data = {
+        version: '1.0',
+        exportedAt: new Date().toISOString(),
+        company: company
+      };
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `شركة_${company.name}_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      alert(`تم تصدير بيانات الشركة ${company.name} بنجاح`);
+    }
+    
+    // دالة تصدير جميع الشركات
+    function exportAllCompanies() {
+      const companies = JSON.parse(localStorage.getItem('companies')) || [];
+      
+      if (companies.length === 0) {
+        alert('لا يوجد شركات لتصديرها');
+        return;
+      }
+      
+      const data = {
+        version: '1.0',
+        exportedAt: new Date().toISOString(),
+        companies: companies
+      };
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `جميع_الشركات_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      alert('تم تصدير جميع الشركات بنجاح');
+    }
+    
+    // دالة فتح نموذج الاستيراد
+    function openImportModal() {
+      document.getElementById('importModal').style.display = 'flex';
+    }
+    
+    // إدارة نموذج الاستيراد
+    const importModal = document.getElementById('importModal');
+    const closeImportModalBtn = document.getElementById('closeImportModalBtn');
+    const cancelImportBtn = document.getElementById('cancelImportBtn');
+    const confirmImportBtn = document.getElementById('confirmImportBtn');
+    const importFileInput = document.getElementById('importFile');
+    const mergeDataCheckbox = document.getElementById('mergeData');
+    
+    closeImportModalBtn.addEventListener('click', closeImportModal);
+    cancelImportBtn.addEventListener('click', closeImportModal);
+    
+    function closeImportModal() {
+      importModal.style.display = 'none';
+      importFileInput.value = '';
+    }
+    
+    confirmImportBtn.addEventListener('click', function() {
+      const file = importFileInput.files[0];
+      
+      if (!file) {
+        alert('الرجاء اختيار ملف للاستيراد');
+        return;
+      }
+      
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        try {
+          const importedData = JSON.parse(e.target.result);
+          let companiesToImport = [];
+          
+          // تحديد نوع البيانات المستوردة (شركة واحدة أو عدة شركات)
+          if (importedData.company) {
+            companiesToImport = [importedData.company];
+          } else if (importedData.companies && Array.isArray(importedData.companies)) {
+            companiesToImport = importedData.companies;
+          } else {
+            throw new Error('صيغة الملف غير صالحة');
+          }
+          
+          // التحقق من صحة البيانات المستوردة
+          if (!companiesToImport.every(c => c.id && c.name && Array.isArray(c.vehicles))) {
+            throw new Error('البيانات المستوردة غير صالحة');
+          }
+          
+          let currentCompanies = JSON.parse(localStorage.getItem('companies')) || [];
+          
+          if (mergeDataCheckbox.checked) {
+            // دمج البيانات مع الحالية
+            companiesToImport.forEach(importedCompany => {
+              const existingIndex = currentCompanies.findIndex(c => c.id === importedCompany.id);
+              
+              if (existingIndex >= 0) {
+                // تحديث الشركة الموجودة
+                currentCompanies[existingIndex] = importedCompany;
+              } else {
+                // إضافة شركة جديدة
+                currentCompanies.push(importedCompany);
+              }
+            });
+          } else {
+            // استبدال جميع البيانات
+            currentCompanies = companiesToImport;
+          }
+          
+          // حفظ البيانات المحدثة
+          localStorage.setItem('companies', JSON.stringify(currentCompanies));
+          
+          closeImportModal();
+          
+          // تحديث قائمة الشركات
+          updateCompaniesList();
+          
+          // عرض رسالة نجاح
+          alert(`تم استيراد ${companiesToImport.length} شركة بنجاح`);
+        } catch (error) {
+          alert(`خطأ في استيراد البيانات: ${error.message}`);
+        }
+      };
+      
+      reader.onerror = function() {
+        alert('حدث خطأ أثناء قراءة الملف');
+      };
+      
+      reader.readAsText(file);
+    });
   </script>
   
   <!-- إضافة خط عربي -->
